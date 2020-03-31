@@ -11,7 +11,7 @@ class Net(nn.Module):
 	FC6 = 'fc6'
 	CLASS_SCORES = FC6  # Symbolic name of the layer providing the class scores as output
 	
-	def __init__(self, input_shape=P.INPUT_SHAPE):
+	def __init__(self, config, input_shape=P.INPUT_SHAPE):
 		super(Net, self).__init__()
 		
 		# Shape of the tensors that we expect to receive as input
@@ -26,8 +26,7 @@ class Net(nn.Module):
 			in_channels=self.input_shape[0],
 			out_size=(15, 20),
 			kernel_size=(self.input_shape[1], self.input_shape[2]),
-			out=H.clp_cos_sim2d,
-			eta=0.1,
+			eta=config.LEARNING_RATE,
 		)  # input_shape-shaped input, 15x20=300 output channels
 		self.bn5 = nn.BatchNorm2d(300)  # Batch Norm layer
 		
@@ -35,8 +34,14 @@ class Net(nn.Module):
 			in_channels=300,
 			out_size=P.NUM_CLASSES,
 			kernel_size=1,
-			competitive=False,
-			eta=0.1,
+			reconstruction=H.HebbianMap2d.REC_QNT_SGN,
+			reduction=H.HebbianMap2d.RED_W_AVG,
+			lrn_sim=H.raised_cos2d_pow(2),
+			lrn_act=H.identity,
+			out_sim=H.vector_proj2d,
+			out_act=H.identity,
+			weight_upd_rule=H.HebbianMap2d.RULE_BASE,
+			eta=config.LEARNING_RATE,
 		) # 300-dimensional input, 10-dimensional output (one per class)
 	
 	# Here we define the flow of information through the network
@@ -57,12 +62,12 @@ class Net(nn.Module):
 		return out
 	
 	# Function for setting teacher signal for supervised hebbian learning
-	def set_teacher_signal(self, y):
+	def set_teacher_signal(self, y, set_deep=False):
 		self.fc6.set_teacher_signal(y)
 		
 		if y is None:
 			self.fc5.set_teacher_signal(y)
-		else:
+		elif set_deep:
 			# Extend teacher signal for layer 5
 			l5_knl_per_class = 28
 			self.fc5.set_teacher_signal(

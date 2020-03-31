@@ -18,7 +18,7 @@ class Net(nn.Module):
 	NET_G1_3_PATH = P.PROJECT_ROOT + '/results/gdes/config_3l/save/model0.pt'
 	NET_H4_6_PATH = P.PROJECT_ROOT + '/results/hebb/top3/save/model0.pt'
 	
-	def __init__(self, input_shape=P.INPUT_SHAPE):
+	def __init__(self, config, input_shape=P.INPUT_SHAPE):
 		super(Net, self).__init__()
 		
 		# Shape of the tensors that we expect to receive as input

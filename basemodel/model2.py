@@ -18,7 +18,7 @@ class Net(nn.Module):
 	FC3 = 'fc3'
 	CLASS_SCORES = FC3 # Symbolic name of the layer providing the class scores as output
 	
-	def __init__(self, input_shape=P.INPUT_SHAPE):
+	def __init__(self, config, input_shape=P.INPUT_SHAPE):
 		super(Net, self).__init__()
 		
 		# Shape of the tensors that we expect to receive as input

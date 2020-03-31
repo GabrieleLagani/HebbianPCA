@@ -19,7 +19,7 @@ class Net(nn.Module):
 	FC6 = 'fc6'
 	CLASS_SCORES = FC6  # Symbolic name of the layer providing the class scores as output
 	
-	def __init__(self, input_shape=P.INPUT_SHAPE):
+	def __init__(self, config, input_shape=P.INPUT_SHAPE):
 		super(Net, self).__init__()
 		
 		# Shape of the tensors that we expect to receive as input
@@ -32,8 +32,7 @@ class Net(nn.Module):
 			in_channels=128,
 			out_size=(12, 16),
 			kernel_size=3,
-			out=H.clp_cos_sim2d,
-			eta=0.1,
+			eta=config.LEARNING_RATE,
 		)  # 128 input channels, 12x16=192 output channels, 3x3 convolutions
 		self.bn3 = nn.BatchNorm2d(192)  # Batch Norm layer
 		
@@ -42,8 +41,7 @@ class Net(nn.Module):
 			in_channels=192,
 			out_size=(16, 16),
 			kernel_size=3,
-			out=H.clp_cos_sim2d,
-			eta=0.1,
+			eta=config.LEARNING_RATE,
 		)  # 192 input channels, 16x16=256 output channels, 3x3 convolutions
 		self.bn4 = nn.BatchNorm2d(256)  # Batch Norm layer
 		
@@ -55,8 +53,7 @@ class Net(nn.Module):
 			in_channels=self.conv_output_shape[0],
 			out_size=(15, 20),
 			kernel_size=(self.conv_output_shape[1], self.conv_output_shape[2]),
-			out=H.clp_cos_sim2d,
-			eta=0.1,
+			eta=config.LEARNING_RATE,
 		)  # conv_output_shape-shaped input, 15x20=300 output channels
 		self.bn5 = nn.BatchNorm2d(300)  # Batch Norm layer
 		
@@ -64,8 +61,14 @@ class Net(nn.Module):
 			in_channels=300,
 			out_size=P.NUM_CLASSES,
 			kernel_size=1,
-			competitive=False,
-			eta=0.1,
+			reconstruction=H.HebbianMap2d.REC_QNT_SGN,
+			reduction=H.HebbianMap2d.RED_W_AVG,
+			lrn_sim=H.raised_cos2d_pow(2),
+			lrn_act=H.identity,
+			out_sim=H.vector_proj2d,
+			out_act=H.identity,
+			weight_upd_rule=H.HebbianMap2d.RULE_BASE,
+			eta=config.LEARNING_RATE,
 		) # 300-dimensional input, 10-dimensional output (one per class)
 	
 	# This function forwards an input through the convolutional layers and computes the resulting output
@@ -108,14 +111,14 @@ class Net(nn.Module):
 		return out
 	
 	# Function for setting teacher signal for supervised hebbian learning
-	def set_teacher_signal(self, y):
+	def set_teacher_signal(self, y, set_deep=False):
 		self.fc6.set_teacher_signal(y)
 		
 		if y is None:
 			self.conv3.set_teacher_signal(y)
 			self.conv4.set_teacher_signal(y)
 			self.fc5.set_teacher_signal(y)
-		else:
+		elif set_deep:
 			# Extend teacher signal for layer 3, 4 and 5
 			l3_knl_per_class = 16
 			l4_knl_per_class = 24

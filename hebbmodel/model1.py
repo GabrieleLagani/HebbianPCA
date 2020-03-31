@@ -14,7 +14,7 @@ class Net(nn.Module):
 	FC2 = 'fc2'
 	CLASS_SCORES = FC2  # Symbolic name of the layer providing the class scores as output
 	
-	def __init__(self, input_shape=P.INPUT_SHAPE):
+	def __init__(self, config, input_shape=P.INPUT_SHAPE):
 		super(Net, self).__init__()
 		
 		# Shape of the tensors that we expect to receive as input
@@ -27,8 +27,7 @@ class Net(nn.Module):
 			in_channels=3,
 			out_size=(8, 12),
 			kernel_size=5,
-			out=H.clp_cos_sim2d,
-			eta=0.1,
+			eta=config.LEARNING_RATE,
 		) # 3 input channels, 8x12=96 output channels, 5x5 convolutions
 		self.bn1 = nn.BatchNorm2d(96)  # Batch Norm layer
 		
@@ -40,8 +39,14 @@ class Net(nn.Module):
 			in_channels=self.conv_output_shape[0],
 			out_size=P.NUM_CLASSES,
 			kernel_size=(self.conv_output_shape[1], self.conv_output_shape[2]),
-			competitive=False,
-			eta=0.1,
+			reconstruction=H.HebbianMap2d.REC_QNT_SGN,
+			reduction=H.HebbianMap2d.RED_W_AVG,
+			lrn_sim=H.raised_cos2d_pow(2),
+			lrn_act=H.identity,
+			out_sim=H.vector_proj2d,
+			out_act=H.identity,
+			weight_upd_rule=H.HebbianMap2d.RULE_BASE,
+			eta=config.LEARNING_RATE,
 		) # conv_output_shape-shaped input, 10-dimensional output (one per class)
 	
 	# This function forwards an input through the convolutional layers and computes the resulting output
@@ -72,5 +77,5 @@ class Net(nn.Module):
 		return out
 	
 	# Function for setting teacher signal for supervised hebbian learning
-	def set_teacher_signal(self, y):
+	def set_teacher_signal(self, y, set_deep=False):
 		self.fc2.set_teacher_signal(y)

@@ -14,7 +14,7 @@ def eval_batch(net, batch, config, pre_net=None, criterion=None):
 	inputs, labels = batch  # Get the inputs
 	inputs, labels = inputs.to(P.DEVICE), labels.to(P.DEVICE)
 	if pre_net is not None: inputs = pre_net(inputs)[config.PRE_NET_OUT]
-	if hasattr(net, 'set_teacher_signal') and net.training: net.set_teacher_signal(utils.dense2onehot(labels)) # For hebbian supervised learning
+	if hasattr(net, 'set_teacher_signal') and net.training: net.set_teacher_signal(utils.dense2onehot(labels), config.DEEP_TEACHER_SIGNAL) # For hebbian supervised learning
 	outputs = net(inputs)[net.CLASS_SCORES]  # Forward step. Take the output from the last layer (class scores)
 	if hasattr(net, 'set_teacher_signal'): net.set_teacher_signal(None)  # For hebbian supervised learning
 	# Compute predicted classes, count number of correct guesses and update variables for keeping track of accuracy
@@ -53,7 +53,7 @@ def load_models(config, iter_id, testing=True):
 	pre_net = None
 	if config.PreNet is not None:
 		# Load preprocessing network if needed
-		pre_net = config.PreNet()
+		pre_net = config.PreNet(config=config)
 		print("Searching for available saved model for the pre-network...")
 		pre_net_state = utils.load_dict(config.PRE_NET_MDL_PATH)
 		if pre_net_state is not None:
@@ -65,7 +65,7 @@ def load_models(config, iter_id, testing=True):
 		pre_net.eval()
 	net_input_shape = P.INPUT_SHAPE
 	if pre_net is not None: net_input_shape = utils.get_output_fmap_shape(pre_net, config.PRE_NET_OUT)
-	net = config.Net(input_shape=net_input_shape)
+	net = config.Net(config=config, input_shape=net_input_shape)
 	if testing:
 		# Load network model to be tested
 		print("Searching for available saved model...")
