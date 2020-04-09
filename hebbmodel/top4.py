@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import hebbmodel.hebb as H
+import torch.nn.functional as F
 import params as P
 
 
@@ -26,10 +27,12 @@ class Net(nn.Module):
 			in_channels=self.input_shape[0],
 			out_size=(15, 20),
 			kernel_size=(self.input_shape[1], self.input_shape[2]),
+			lrn_act=F.relu,
+			out_act=F.relu,
 			eta=config.LEARNING_RATE,
 		)  # input_shape-shaped input, 15x20=300 output channels
 		self.bn5 = nn.BatchNorm2d(300)  # Batch Norm layer
-		
+		"""
 		self.fc6 = H.HebbianMap2d(
 			in_channels=300,
 			out_size=P.NUM_CLASSES,
@@ -43,6 +46,20 @@ class Net(nn.Module):
 			weight_upd_rule=H.HebbianMap2d.RULE_BASE,
 			eta=config.LEARNING_RATE,
 		) # 300-dimensional input, 10-dimensional output (one per class)
+		"""
+		self.fc6 = H.HebbianMap2d(
+			in_channels=300,
+			out_size=P.NUM_CLASSES,
+			kernel_size=1,
+			reconstruction=None,
+			reduction=H.HebbianMap2d.RED_AVG,
+			lrn_sim=H.kernel_mult2d,
+			lrn_act=H.identity,
+			out_sim=H.kernel_mult2d,
+			out_act=H.identity,
+			weight_upd_rule=H.HebbianMap2d.RULE_SMX,
+			eta=config.LEARNING_RATE,
+		)  # 300-dimensional input, 10-dimensional output (one per class)
 	
 	# Here we define the flow of information through the network
 	def forward(self, x):
@@ -72,7 +89,7 @@ class Net(nn.Module):
 			l5_knl_per_class = 28
 			self.fc5.set_teacher_signal(
 				torch.cat((
+					torch.ones(y.size(0), self.fc5.weight.size(0) - l5_knl_per_class * P.NUM_CLASSES, device=y.device),
 					y.view(y.size(0), y.size(1), 1).repeat(1, 1, l5_knl_per_class).view(y.size(0), -1),
-					torch.ones(y.size(0), self.fc5.weight.size(0) - l5_knl_per_class * P.NUM_CLASSES, device=y.device)
 				), dim=1)
 			)

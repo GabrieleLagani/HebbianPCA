@@ -30,11 +30,11 @@ class Net(nn.Module):
 		self.input_shape = input_shape
 		
 		# Here we define the layers of our network
-		self.net_g1 = basemodel.model1.Net(input_shape)
+		self.net_g1 = basemodel.model1.Net(config, input_shape)
 		loaded_model = utils.load_dict(self.NET_G1_PATH)
 		if loaded_model is not None: self.net_g1.load_state_dict(loaded_model)
 		self.net_g1.to(P.DEVICE)
-		self.net_h2_6 = hebbmodel.top1.Net(utils.get_output_fmap_shape(self.net_g1, basemodel.model1.Net.BN1))
+		self.net_h2_6 = hebbmodel.top1.Net(config, utils.get_output_fmap_shape(self.net_g1, basemodel.model1.Net.BN1))
 		loaded_model = utils.load_dict(self.NET_H2_6_PATH)
 		if loaded_model is not None: self.net_h2_6.load_state_dict(loaded_model)
 		self.net_h2_6.to(P.DEVICE)

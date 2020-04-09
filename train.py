@@ -35,9 +35,9 @@ def train_pass(net, dataset, config, pre_net=None, criterion=None, optimizer=Non
 			optimizer.step()  # Optimize (update weights)
 		
 		# Estimate training progress roughly every 5000 samples (or if this is the last batch)
-		if total % 5000 < config.BATCH_SIZE or total == config.VAL_SET_SPLIT:
-			print("Epoch progress: " + str(total) + "/" + str(config.VAL_SET_SPLIT) + " processed samples")
-	
+		if total % P.UPDATE_INTERVAL < config.BATCH_SIZE or total == config.VAL_SET_SPLIT:
+			print("\rEpoch progress: " + str(total) + "/" + str(config.VAL_SET_SPLIT) + " processed samples", end=('\n' if total == config.VAL_SET_SPLIT else ''))
+
 	return acc
 
 

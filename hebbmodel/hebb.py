@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import params as P
 import utils
 
 # Apply unfold operation to input in order to prepare it to be processed against a sliding kernel whose shape
@@ -48,40 +49,6 @@ def kernel_sum2d(input, kernel):
 	out = inp_unf + kernel.view(1, kernel.size(0), 1, 1, -1)
 	return out
 
-# Test the implementation of the kernel_sum2d function
-def test_kernelsum():
-	x = torch.randn(
-		8,  # Batch dimension
-		3,  # Input channels dimension
-		10, # Height dimension
-		12  # Width dimension
-	)
-	w = torch.randn(
-		6,  # Output channels dimension
-		3,  # Input channels dimension
-		4,  # Height dimension
-		5   # Width dimension
-	)
-	output = torch.empty(
-		x.shape[0],  # Batch dimension
-		w.shape[0],  # Output channels dimension
-		x.shape[2] - w.shape[2] + 1,  # Height dimension
-		x.shape[3] - w.shape[3] + 1,  # Width dimension
-		w.shape[1] * w.shape[2] * w.shape[3]  # Filter dimension
-	)
-	
-	# Cross-validate vectorial implementation with for-loop implementation
-	for batch in range(0, x.shape[0]):  # Loop over batch dimension
-		for outchn in range(0, w.shape[0]):  # Loop over output channel dimension
-			for i in range(0, x.shape[2] - w.shape[2] + 1):  # Loop over height dimension
-				for j in range(0, x.shape[3] - w.shape[3] + 1):  # Loop over width dimension
-					output[batch, outchn, i, j, :] = (x[batch, :, i:i + w.shape[2], j:j + w.shape[3]] + w[outchn, :, :, :]).view(-1)
-	
-	out = kernel_sum2d(x, w)
-	
-	print((output.equal(out)))  # Should print out True
-
-
 # The identity function
 def identity(x):
 	return x
@@ -123,17 +90,17 @@ def raised_cos2d_pow(p=2):
 
 # Response of a gaussian activation function
 def gauss(x, w, sigma=None):
-	try:
-		d = torch.norm(kernel_sum2d(x, -w), p=2, dim=4)
-	except (MemoryError, RuntimeError):
-		# Serialized version of distance computation using less memory
-		x_unf = unfold_map2d(x, w.size(2), w.size(3)).squeeze(1) # Squeeze out-channel dimension, because we are going to do serial processing of 1 channel at a time
-		d = torch.zeros(x_unf.size(0), w.size(0), x_unf.size(1), x_unf.size(2), device=x.device) # batch, out-channel, height, width
-		for i in range(w.size(0)):
-			w_i = w[i, :, :, :].view(1, 1, 1, -1) # batch, height, width, filter
-			d[:, i, :, :] = torch.norm(x_unf - w_i, p=2, dim=3) # w_i broadcast over x_unf batch, height and width dimensions
+	# Serialized version of distance computation using less memory
+	x_unf = unfold_map2d(x, w.size(2), w.size(3))
+	d = torch.zeros(x_unf.size(0), w.size(0), x_unf.size(2), x_unf.size(3), device=x.device) # batch, out-ch, height, width
+	for i in range(w.size(0) // P.REDUCTION_FACTOR + (1 if w.size(0) % P.REDUCTION_FACTOR != 0 else 0)):
+		start = i * P.REDUCTION_FACTOR
+		end = min((i+1) * P.REDUCTION_FACTOR, w.size(0))
+		w_i = w[start:end, :, :, :]
+		w_i = w_i.view(1, w_i.size(0), 1, 1, -1) # batch, out-ch, height, width, filter
+		d[:, start:end, :, :] = torch.norm(x_unf - w_i, p=2, dim=4) # w_i broadcast over x_unf batch, height and width dims, x_unf broadcast over w out_ch dim
 	if sigma is None: return torch.exp(-d.pow(2) / (2*utils.shape2size(tuple(w[0].size())))) # heuristic: use number of dimensions as variance
-	#if sigma is None: return torch.exp(-d.pow(2) / (2 * torch.norm(w.view(w.size(0), 1, -1) - w.view(1, w.size(0), -1), p=2, dim=2).max().pow(2)/w.size(0))) # heuristic: normalization condition
+	#if sigma is None: return torch.exp(-d.pow(2) / (2 * torch.norm(w.view(w.size(0), 1, -1) - w.view(1, w.size(0), -1), p=2, dim=2).max().pow(2)/(w.size(0)**(2/(utils.shape2size(tuple(w[0].size()))))))) # heuristic: normalization condition
 	#if sigma is None: return torch.exp(-d.pow(2) / (2 * d.mean().pow(2)))
 	return torch.exp(-d.pow(2) / (2 * (sigma.view(1, -1, 1, 1).pow(2))))
 
@@ -145,22 +112,28 @@ def sched_exp(tau=1000, eta_min=0.01):
 
 # This module represents a layer of convolutional neurons that are trained with a Hebbian-WTA rule
 class HebbianMap2d(nn.Module):
+	# delta_w = eta * r * (x - reconst)
+
 	# Types of learning rules
-	RULE_BASE = 'base' # delta_w = eta * y' * lfb * (x - reconst)
-	RULE_HEBB = 'hebb' # delta_w = eta * y' * y * lfb * (x - reconst)
-	RULE_DIFF = 'diff' # delta_w = eta * y' * (lfb - y) * (x - reconst)
-	RULE_SMX = 'smx' # delta_w = eta * y' * (lfb - softmax(y)) * (x - reconst)
-	
+	RULE_BASE = 'base' # r = lfb
+	RULE_HEBB = 'hebb' # r = y * lfb
+	RULE_DIFF = 'diff' # r = y' * (lfb - y)
+	RULE_SMX = 'smx' # r = y' * (lfb - softmax(y))
+
+	# Type of reconstruction scheme
+	REC_QNT = 'qnt'  # reconst = w
+	REC_QNT_SGN = 'qnt_sgn'  # reconst = sign(lfb) * w
+	REC_LIN_CMB = 'lin_cmb'  # reconst = sum_i y_i w_i
+
 	# Types of LFB kernels
 	LFB_GAUSS = 'gauss'
 	LFB_DoG = 'DoG'
 	LFB_EXP = 'exp'
 	LFB_DoE = 'DoE'
 
-	# Type of reconstruction scheme
-	REC_QNT = 'qnt' # reconst = w
-	REC_QNT_SGN = 'qnt_sgn' # reconst = sign(lfb) * w
-	REC_LIN_CMB = 'lin_cmb' # reconst = sum_i y_i w_i
+	# Types of weight initialization schemes
+	INIT_BASE = 'base'
+	INIT_NORM = 'norm'
 
 	# Type of update reduction scheme
 	RED_AVG = 'avg' # average
@@ -176,11 +149,12 @@ class HebbianMap2d(nn.Module):
 				 random_abstention=False,
 				 lfb_value=0,
 				 lrn_sim=kernel_mult2d,
-				 lrn_act=F.relu,
+				 lrn_act=identity,
 				 out_sim=kernel_mult2d,
-				 out_act=F.relu,
+				 out_act=identity,
+				 weight_init=INIT_BASE,
 				 weight_upd_rule=RULE_HEBB,
-				 eta=1e-2,
+				 eta=1e-3,
 				 lr_schedule=None,
 				 tau=1000):
 		super(HebbianMap2d, self).__init__()
@@ -194,7 +168,8 @@ class HebbianMap2d(nn.Module):
 		stdv = 1 / (in_channels * kernel_size[0] * kernel_size[1]) ** 0.5
 		self.register_buffer('weight', torch.empty(out_channels, in_channels, kernel_size[0], kernel_size[1]))
 		nn.init.uniform_(self.weight, -stdv, stdv) # Same initialization used by default pytorch conv modules (the one from the paper "Efficient Backprop, LeCun")
-		
+		if weight_init == self.INIT_NORM: self.weight = self.weight / self.weight.view(self.weight.size(0), -1).norm(dim=1, p=2).view(-1, 1, 1, 1) # normalize weights
+
 		# Enable/disable features as random abstention, competitive learning, lateral feedback, type of reconstruction
 		self.competitive = competitive
 		self.reconstruction = reconstruction
@@ -252,20 +227,22 @@ class HebbianMap2d(nn.Module):
 	def update(self, x):
 		# Prepare the inputs
 		s = self.lrn_sim(x, self.weight)
-		t = self.teacher_signal
-		if t is not None: t = t.unsqueeze(2).unsqueeze(3) * torch.ones_like(s, device=s.device)
-		s = s.permute(0, 2, 3, 1).contiguous().view(-1, self.weight.size(0))
-		if t is not None: t = t.permute(0, 2, 3, 1).contiguous().view(-1, self.weight.size(0))
-		x_unf = unfold_map2d(x, self.weight.size(2), self.weight.size(3))
-		x_unf = x_unf.permute(0, 2, 3, 1, 4).contiguous().view(s.size(0), 1, -1)
 		torch.set_grad_enabled(True)
 		s.requires_grad = True
 		y = self.lrn_act(s)
-		z = y.sum((0, 1))
+		z = y.sum((0, 1, 2, 3))
 		z.backward()
 		y_prime = s.grad
 		s.requires_grad = False
 		torch.set_grad_enabled(False)
+		t = self.teacher_signal
+		if t is not None: t = t.unsqueeze(2).unsqueeze(3) * torch.ones_like(s, device=s.device)
+		s = s.permute(0, 2, 3, 1).contiguous().view(-1, self.weight.size(0))
+		y = y.permute(0, 2, 3, 1).contiguous().view(-1, self.weight.size(0))
+		y_prime = y_prime.permute(0, 2, 3, 1).contiguous().view(-1, self.weight.size(0))
+		if t is not None: t = t.permute(0, 2, 3, 1).contiguous().view(-1, self.weight.size(0))
+		x_unf = unfold_map2d(x, self.weight.size(2), self.weight.size(3))
+		x_unf = x_unf.permute(0, 2, 3, 1, 4).contiguous().view(s.size(0), 1, -1)
 		
 		# Random abstention
 		if self.random_abstention:
@@ -275,7 +252,7 @@ class HebbianMap2d(nn.Module):
 		
 		# Competition. The returned winner_mask is a bitmap telling where a neuron won and where one lost.
 		if self.competitive:
-			if t is not None: scores *= t
+			if t is not None: scores = scores * t
 			winner_mask = (scores == scores.max(1, keepdim=True)[0]).float()
 			if self.random_abstention: # Update statistics if using random abstension
 				winner_mask_sum = winner_mask.sum(0)  # Number of inputs over which a neuron won
@@ -299,48 +276,35 @@ class HebbianMap2d(nn.Module):
 		
 		# Compute step modulation coefficient
 		r = lfb_out # RULE_BASE
-		if self.weight_upd_rule == self.RULE_HEBB: r *= y
-		if self.weight_upd_rule == self.RULE_DIFF: r = (r - y)
-		if self.weight_upd_rule == self.RULE_SMX: r = (r - torch.softmax(y, dim=1))
-		r *= y_prime
+		if self.weight_upd_rule == self.RULE_HEBB: r = r * y
+		if self.weight_upd_rule == self.RULE_DIFF: r = y_prime * (r - y)
+		if self.weight_upd_rule == self.RULE_SMX: r = y_prime * (r - torch.softmax(y, dim=1))
 		r_abs = r.abs()
 		r_sign = r.sign()
 
-		# Compute delta
+		# Compute delta_w (serialized version for computation of delta_w using less memory)
 		w = self.weight.view(1, self.weight.size(0), -1)
-		try:
-			reconstr = 0.
-			if self.reconstruction == self.REC_QNT: reconstr = w
-			if self.reconstruction == self.REC_QNT_SGN: reconstr = r_sign.unsqueeze(2) * w
-			if self.reconstruction == self.REC_LIN_CMB: reconstr = torch.cumsum(r.unsqueeze(2) * w, dim=1)
-			delta_w = r.unsqueeze(2) * (x_unf - reconstr)
-	
+		delta_w_avg = torch.zeros_like(self.weight.view(self.weight.size(0), -1))
+		reconstr = None
+		for i in range((self.weight.size(0) // P.REDUCTION_FACTOR) + (1 if self.weight.size(0) % P.REDUCTION_FACTOR != 0 else 0)):
+			start = i*P.REDUCTION_FACTOR
+			end = min((i+1)*P.REDUCTION_FACTOR, self.weight.size(0))
+			w_i = w[:, start:end, :]
+			r_i = r.unsqueeze(2)[:, start:end, :]
+			r_abs_i = r_abs.unsqueeze(2)[:, start:end, :]
+			r_sign_i = r_sign.unsqueeze(2)[:, start:end, :]
+			if self.reconstruction == self.REC_QNT: reconstr = w_i
+			if self.reconstruction == self.REC_QNT_SGN: reconstr = r_sign_i * w_i
+			if self.reconstruction == self.REC_LIN_CMB: reconstr = torch.cumsum( r_i * w_i, dim=1) + (reconstr[:, -1, :].unsqueeze(1) if reconstr is not None else 0.)
+			delta_w_i = r_i * (x_unf - (reconstr if reconstr is not None else 0.))
 			# Since we use batches of inputs, we need to aggregate the different update steps of each kernel in a unique
 			# update. We do this by taking the weighted average of the steps, the weights being the r coefficients that
 			# determine the length of each step
 			if self.reduction == self.RED_W_AVG:
-				r_sum = r_abs.sum(0)
+				r_sum = r_abs_i.sum(0)
 				r_sum += (r_sum == 0).float()  # Prevent divisions by zero
-				delta_w_avg = (delta_w * r_abs.unsqueeze(2)).sum(0) / r_sum.unsqueeze(1)
-			else: delta_w_avg = delta_w.mean(dim=0) # RED_AVG
-		except (MemoryError, RuntimeError):
-			# Serialized version for computation of delta_w using less memory
-			delta_w_avg = torch.zeros_like(self.weight.view(self.weight.size(0), -1))
-			reconstr = 0.
-			for i in range(self.weight.size(0)):
-				w_i = w[:, i, :]
-				r_i = r.unsqueeze(2)[:, i, :]
-				r_abs_i = r_abs.unsqueeze(2)[:, i, :]
-				r_sign_i = r_sign.unsqueeze(2)[:, i, :]
-				if self.reconstruction == self.REC_QNT: reconstr = w_i
-				if self.reconstruction == self.REC_QNT_SGN: reconstr = r_sign_i * w_i
-				if self.reconstruction == self.REC_LIN_CMB: reconstr += r_i * w_i
-				delta_w_i = r_i * (x_unf.squeeze(1) - reconstr)
-				if self.reduction == self.RED_W_AVG:
-					r_sum = r_abs_i.sum(0)
-					r_sum += (r_sum == 0).float()  # Prevent divisions by zero
-					delta_w_avg[i, :] = (delta_w_i * r_abs_i).sum(0) / r_sum
-				else: delta_w_avg[i, :] = delta_w_i.mean(dim=0) # RED_AVG
+				delta_w_avg[start:end, :] = (delta_w_i * r_abs_i).sum(0) / r_sum
+			else: delta_w_avg[start:end, :] = delta_w_i.mean(dim=0) # RED_AVG
 
 		# Apply delta
 		self.weight += self.eta * delta_w_avg.view_as(self.weight)
@@ -349,93 +313,3 @@ class HebbianMap2d(nn.Module):
 		if self.lfb_on: self.lfb_kernel = self.lfb_kernel.pow(self.alpha)
 		if self.lr_schedule is not None: self.eta = self.lr_schedule(self.eta)
 	
-
-# Generate a batch of random inputs for testing
-def gen_batch(centers, batch_size, win_height, win_width):
-	# Generate an input "image" by first generating patches as random perturbations on the cluster centers and then
-	# concatenating them in the horizontal and vertical dimensions. Repeat to generate a batch.
-	batch = torch.empty(0)
-	for j in range(batch_size):  # Loop to generate batch
-		image = torch.empty(0)
-		for k in range(win_height):  # Loop to concat image rows vertically
-			row = torch.empty(0)
-			for l in range(win_width):  # Loop to concat patches horizontally
-				# Generate an input patch by perturbing a cluster center
-				index = int(torch.floor(torch.rand(1) * centers.size(0)).item())
-				patch = centers[index] + 0.1 * torch.randn_like(centers[index])
-				# Concatenate patch horizonally to the image row
-				row = torch.cat((row, patch), 2)
-			# Concatenate row to the image vertically
-			image = torch.cat((image, row), 1)
-		# Concatenate the image to the batch
-		batch = torch.cat((batch, image.unsqueeze(0)), 0)
-	return batch
-
-# Test for the batch generation function
-def test_genbatch():
-	# Generate centers around which clusters are built
-	centers = torch.randn(6, 3, 4, 5)
-	# Generate a batch of inputs around the centers
-	batch = gen_batch(centers, 10, 2, 2)
-	# Check that the batch size is correct (just to be sure)
-	print(batch.size()) # Should print 10x3x8x10
-
-# Test the implementation of the HebbianMap2d
-def test_hebbianmap():
-	# Function for printing summary information
-	def print_results(model, centers):
-		print('\n' + '#'*79 + '\n')
-		responses = model(centers).squeeze()
-		top_act, closest_neurons = responses.max(1)
-		for i in range(responses.size(0)): print("Closest neuron to center " + str(i) + ": " + str(closest_neurons[i].item()) + ", output: " + str(top_act[i].item()))
-		print()
-		top_act, closest_centers = responses.max(0)
-		for i in range(responses.size(1)): print("Closest center to neuron " + str(i) + ": " + str(closest_centers[i].item()) + ", output: " + str(top_act[i].item()))
-		print('\n' + '#' * 79 + '\n')
-	
-	torch.random.manual_seed(3)
-	kernel_shape = (6, 3, 4, 5)
-	num_centers = 6
-	num_iter = 2000
-	batch_size = 10
-	win_height = 2
-	win_width = 2
-	device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-	model = HebbianMap2d(
-		in_channels=kernel_shape[1],
-		out_size=kernel_shape[0],
-		kernel_size=[kernel_shape[2], kernel_shape[3]],
-		competitive=True,
-		random_abstention=False,
-		lfb_value=0,
-		lrn_sim=raised_cos2d_pow(2),
-		out_sim=cos_sim2d,
-		weight_upd_rule=HebbianMap2d.RULE_BASE,
-		eta=0.1,
-		lr_schedule=sched_exp(1000, 0.01),
-		tau=1000
-	)
-	model.eval()
-	model.to(device)
-	
-	# Generate centers around which clusters are built
-	centers = torch.randn(num_centers, *kernel_shape[1:4])
-	# Check the distance between the centers and the randomly initialized weight vectors
-	print_results(model, centers)
-	
-	# Train the model: generate a batch of inputs and feed it to the model, repeat for the desired number of iterations
-	model.train()
-	for i in range(num_iter):
-		batch = gen_batch(centers, batch_size, win_height, win_width)
-		batch = batch.to(device)
-		model(batch)
-	model.eval()
-	
-	# Verify that the weight vectors of the model have converged to the cluster centers
-	print_results(model, centers)
-
-
-if __name__=='__main__':
-	test_kernelsum()
-	test_genbatch()
-	test_hebbianmap()

@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 import hebbmodel.hebb as H
 import params as P
 import utils
@@ -28,6 +29,8 @@ class Net(nn.Module):
 			in_channels=192,
 			out_size=(16, 16),
 			kernel_size=3,
+			lrn_act=F.relu,
+			out_act=F.relu,
 			eta=config.LEARNING_RATE,
 		)  # 192 input channels, 16x16=256 output channels, 3x3 convolutions
 		self.bn4 = nn.BatchNorm2d(256)  # Batch Norm layer
@@ -40,10 +43,12 @@ class Net(nn.Module):
 			in_channels=self.conv_output_shape[0],
 			out_size=(15, 20),
 			kernel_size=(self.conv_output_shape[1], self.conv_output_shape[2]),
+			lrn_act=F.relu,
+			out_act=F.relu,
 			eta=config.LEARNING_RATE,
 		)  # conv_output_shape-shaped input, 15x20=300 output channels
 		self.bn5 = nn.BatchNorm2d(300)  # Batch Norm layer
-		
+		"""
 		self.fc6 = H.HebbianMap2d(
 			in_channels=300,
 			out_size=P.NUM_CLASSES,
@@ -57,6 +62,20 @@ class Net(nn.Module):
 			weight_upd_rule=H.HebbianMap2d.RULE_BASE,
 			eta=config.LEARNING_RATE,
 		) # 300-dimensional input, 10-dimensional output (one per class)
+		"""
+		self.fc6 = H.HebbianMap2d(
+			in_channels=300,
+			out_size=P.NUM_CLASSES,
+			kernel_size=1,
+			reconstruction=None,
+			reduction=H.HebbianMap2d.RED_AVG,
+			lrn_sim=H.kernel_mult2d,
+			lrn_act=H.identity,
+			out_sim=H.kernel_mult2d,
+			out_act=H.identity,
+			weight_upd_rule=H.HebbianMap2d.RULE_SMX,
+			eta=config.LEARNING_RATE,
+		)  # 300-dimensional input, 10-dimensional output (one per class)
 	
 	# This function forwards an input through the convolutional layers and computes the resulting output
 	def get_conv_output(self, x):
@@ -102,13 +121,14 @@ class Net(nn.Module):
 			l5_knl_per_class = 28
 			self.conv4.set_teacher_signal(
 				torch.cat((
+					torch.ones(y.size(0), self.conv4.weight.size(0) - l4_knl_per_class * P.NUM_CLASSES,
+							   device=y.device),
 					y.view(y.size(0), y.size(1), 1).repeat(1, 1, l4_knl_per_class).view(y.size(0), -1),
-					torch.ones(y.size(0), self.conv4.weight.size(0) - l4_knl_per_class * P.NUM_CLASSES, device=y.device)
 				), dim=1)
 			)
 			self.fc5.set_teacher_signal(
 				torch.cat((
+					torch.ones(y.size(0), self.fc5.weight.size(0) - l5_knl_per_class * P.NUM_CLASSES, device=y.device),
 					y.view(y.size(0), y.size(1), 1).repeat(1, 1, l5_knl_per_class).view(y.size(0), -1),
-					torch.ones(y.size(0), self.fc5.weight.size(0) - l5_knl_per_class * P.NUM_CLASSES, device=y.device)
 				), dim=1)
 			)

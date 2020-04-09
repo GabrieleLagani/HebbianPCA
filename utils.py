@@ -95,13 +95,14 @@ def plot_grid(tensor, path, num_rows=8, num_cols=12):
 	#tensor = torch.sigmoid((tensor-tensor.mean())/tensor.std()).permute(0, 2, 3, 1).cpu().detach().numpy()
 	tensor = ((tensor - tensor.min())/(tensor.max() - tensor.min())).permute(0, 2, 3, 1).cpu().detach().numpy()
 	fig = plt.figure()
-	for i in range(tensor.shape[0]):
+	for i in range(min(tensor.shape[0], num_rows*num_cols)):
 		ax1 = fig.add_subplot(num_rows,num_cols,i+1)
 		ax1.imshow(tensor[i])
 		ax1.axis('off')
 		ax1.set_xticklabels([])
 		ax1.set_yticklabels([])
 	plt.subplots_adjust(wspace=0.1, hspace=0.1)
+	os.makedirs(os.path.dirname(path), exist_ok=True)
 	fig.savefig(path, bbox_inches='tight')
 	plt.close(fig)
 

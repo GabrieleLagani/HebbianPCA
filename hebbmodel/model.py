@@ -37,6 +37,8 @@ class Net(nn.Module):
 			in_channels=3,
 			out_size=(8, 12),
 			kernel_size=5,
+			lrn_act=F.relu,
+			out_act=F.relu,
 			eta=config.LEARNING_RATE,
 		) # 3 input channels, 8x12=96 output channels, 5x5 convolutions
 		self.bn1 = nn.BatchNorm2d(96)  # Batch Norm layer
@@ -46,6 +48,8 @@ class Net(nn.Module):
 			in_channels=96,
 			out_size=(8, 16),
 			kernel_size=3,
+			lrn_act=F.relu,
+			out_act=F.relu,
 			eta=config.LEARNING_RATE,
 		)  # 96 input channels, 8x16=128 output channels, 3x3 convolutions
 		self.bn2 = nn.BatchNorm2d(128)  # Batch Norm layer
@@ -55,6 +59,8 @@ class Net(nn.Module):
 			in_channels=128,
 			out_size=(12, 16),
 			kernel_size=3,
+			lrn_act=F.relu,
+			out_act=F.relu,
 			eta=config.LEARNING_RATE,
 		)  # 128 input channels, 12x16=192 output channels, 3x3 convolutions
 		self.bn3 = nn.BatchNorm2d(192)  # Batch Norm layer
@@ -64,6 +70,8 @@ class Net(nn.Module):
 			in_channels=192,
 			out_size=(16, 16),
 			kernel_size=3,
+			lrn_act=F.relu,
+			out_act=F.relu,
 			eta=config.LEARNING_RATE,
 		)  # 192 input channels, 16x16=256 output channels, 3x3 convolutions
 		self.bn4 = nn.BatchNorm2d(256)  # Batch Norm layer
@@ -76,10 +84,12 @@ class Net(nn.Module):
 			in_channels=self.conv_output_shape[0],
 			out_size=(15, 20),
 			kernel_size=(self.conv_output_shape[1], self.conv_output_shape[2]),
+			lrn_act=F.relu,
+			out_act=F.relu,
 			eta=config.LEARNING_RATE,
 		)  # conv_output_shape-shaped input, 15x20=300 output channels
 		self.bn5 = nn.BatchNorm2d(300)  # Batch Norm layer
-		
+		"""
 		self.fc6 = H.HebbianMap2d(
 			in_channels=300,
 			out_size=P.NUM_CLASSES,
@@ -93,6 +103,22 @@ class Net(nn.Module):
 			weight_upd_rule=H.HebbianMap2d.RULE_BASE,
 			eta=config.LEARNING_RATE,
 		) # 300-dimensional input, 10-dimensional output (one per class)
+
+		"""
+		self.fc6 = H.HebbianMap2d(
+			in_channels=300,
+			out_size=P.NUM_CLASSES,
+			kernel_size=1,
+			reconstruction=None,
+			reduction=H.HebbianMap2d.RED_AVG,
+			lrn_sim=H.kernel_mult2d,
+			lrn_act=H.identity,
+			out_sim=H.kernel_mult2d,
+			out_act=H.identity,
+			weight_upd_rule=H.HebbianMap2d.RULE_SMX,
+			eta=config.LEARNING_RATE,
+		)  # 300-dimensional input, 10-dimensional output (one per class)
+
 	
 	# This function forwards an input through the convolutional layers and computes the resulting output
 	def get_conv_output(self, x):
@@ -158,10 +184,10 @@ class Net(nn.Module):
 			self.fc5.set_teacher_signal(y)
 		elif set_deep:
 			# Extend teacher signal for layer 2, 3, 4 and 5
-			l2_knl_per_class = 5
-			l3_knl_per_class = 12
-			l4_knl_per_class = 20
-			l5_knl_per_class = 25
+			l2_knl_per_class = 8
+			l3_knl_per_class = 16
+			l4_knl_per_class = 24
+			l5_knl_per_class = 28
 			self.conv2.set_teacher_signal(
 				torch.cat((
 					torch.ones(y.size(0), self.conv2.weight.size(0) - l2_knl_per_class * P.NUM_CLASSES, device=y.device),
