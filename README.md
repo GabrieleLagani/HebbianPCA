@@ -1,7 +1,9 @@
 Pytorch implementation of Hebbian learning algorithms to train
 deep convolutional neural networks. This work, which focuses on 
 Hebbian PCA algorithms, is a continuation of 
-https://github.com/GabrieleLagani/HebbianLearningThesis
+https://github.com/GabrieleLagani/HebbianLearningThesis  
+A neural network model is trained on CIFAR10 both using Hebbian PCA 
+algorithms and SGD in order to compare the results.
 
 In order to launch a training session, type:  
 `PYTHONPATH=<project root> python <project root>/train.py --config <config family>/<config name>`  

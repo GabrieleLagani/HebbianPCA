@@ -268,7 +268,7 @@ CONFIG_LIST = [
 	
 	Configuration(
 		config_family=P.CONFIG_FAMILY_GDES,
-		config_name='fc_on_hebb_conv1',
+		config_name='fc_on_hebb_conv1', # 63.40
 		net_class=basemodel.fc.Net,
 		batch_size=64,
 		num_epochs=20,
@@ -288,7 +288,7 @@ CONFIG_LIST = [
 	
 	Configuration(
 		config_family=P.CONFIG_FAMILY_GDES,
-		config_name='fc_on_hebb_conv2',
+		config_name='fc_on_hebb_conv2', # 65.42
 		net_class=basemodel.fc.Net,
 		batch_size=64,
 		num_epochs=20,
@@ -308,7 +308,7 @@ CONFIG_LIST = [
 	
 	Configuration(
 		config_family=P.CONFIG_FAMILY_GDES,
-		config_name='fc_on_hebb_conv3',
+		config_name='fc_on_hebb_conv3', # 65.40
 		net_class=basemodel.fc.Net,
 		batch_size=64,
 		num_epochs=20,
@@ -328,7 +328,7 @@ CONFIG_LIST = [
 	
 	Configuration(
 		config_family=P.CONFIG_FAMILY_GDES,
-		config_name='fc_on_hebb_conv4',
+		config_name='fc_on_hebb_conv4', # 63.60
 		net_class=basemodel.fc.Net,
 		batch_size=64,
 		num_epochs=20,
@@ -348,7 +348,7 @@ CONFIG_LIST = [
 	
 	Configuration(
 		config_family=P.CONFIG_FAMILY_GDES,
-		config_name='fc_on_hebb_fc5',
+		config_name='fc_on_hebb_fc5', # 54.71
 		net_class=basemodel.fc.Net,
 		batch_size=64,
 		num_epochs=20,
@@ -368,7 +368,7 @@ CONFIG_LIST = [
 	
 	Configuration(
 		config_family=P.CONFIG_FAMILY_GDES,
-		config_name='top1',
+		config_name='top1', # 83.84
 		net_class=basemodel.top1.Net,
 		batch_size=64,
 		num_epochs=20,
@@ -388,7 +388,7 @@ CONFIG_LIST = [
 	
 	Configuration(
 		config_family=P.CONFIG_FAMILY_GDES,
-		config_name='top2',
+		config_name='top2', # 78.60
 		net_class=basemodel.top2.Net,
 		batch_size=64,
 		num_epochs=20,
@@ -408,7 +408,7 @@ CONFIG_LIST = [
 	
 	Configuration(
 		config_family=P.CONFIG_FAMILY_GDES,
-		config_name='top3',
+		config_name='top3', # 72.92
 		net_class=basemodel.top3.Net,
 		batch_size=64,
 		num_epochs=20,
@@ -428,7 +428,7 @@ CONFIG_LIST = [
 	
 	Configuration(
 		config_family=P.CONFIG_FAMILY_GDES,
-		config_name='top4',
+		config_name='top4', # 66.04
 		net_class=basemodel.top4.Net,
 		batch_size=64,
 		num_epochs=20,
@@ -452,7 +452,7 @@ CONFIG_LIST = [
 
 	Configuration(
 		config_family=P.CONFIG_FAMILY_HEBB,
-		config_name='config_base',
+		config_name='config_base', # 45.30
 		net_class=hebbmodel.model.Net,
 		batch_size=64,
 		num_epochs=20,
@@ -470,7 +470,7 @@ CONFIG_LIST = [
 
 	Configuration(
 		config_family=P.CONFIG_FAMILY_HEBB,
-		config_name='fc_on_gdes_fc5', # Val: 85.76, Test:84.88
+		config_name='fc_on_gdes_fc5', # 84.88
 		net_class=hebbmodel.fc.Net,
 		batch_size=64,
 		num_epochs=2,
@@ -486,7 +486,7 @@ CONFIG_LIST = [
 	
 	Configuration(
 		config_family=P.CONFIG_FAMILY_HEBB,
-		config_name='top1',
+		config_name='top1', # 47.46
 		net_class=hebbmodel.top1.Net,
 		batch_size=64,
 		num_epochs=20,
@@ -503,7 +503,7 @@ CONFIG_LIST = [
 	
 	Configuration(
 		config_family=P.CONFIG_FAMILY_HEBB,
-		config_name='top2',
+		config_name='top2', # 60.47
 		net_class=hebbmodel.top2.Net,
 		batch_size=64,
 		num_epochs=20,
@@ -520,7 +520,7 @@ CONFIG_LIST = [
 	
 	Configuration(
 		config_family=P.CONFIG_FAMILY_HEBB,
-		config_name='top3',
+		config_name='top3', # 70.56
 		net_class=hebbmodel.top3.Net,
 		batch_size=64,
 		num_epochs=20,
@@ -537,7 +537,7 @@ CONFIG_LIST = [
 	
 	Configuration(
 		config_family=P.CONFIG_FAMILY_HEBB,
-		config_name='top4',
+		config_name='top4', # 83.39
 		net_class=hebbmodel.top4.Net,
 		batch_size=64,
 		num_epochs=20,
@@ -558,7 +558,7 @@ CONFIG_LIST = [
 	
 	Configuration(
 		config_family=P.CONFIG_FAMILY_GDES,
-		config_name='g1h2g3_6',
+		config_name='g1h2g3_6', # 81.12
 		net_class=basemodel.top2.Net,
 		batch_size=64,
 		num_epochs=20,
@@ -578,7 +578,7 @@ CONFIG_LIST = [
 	
 	Configuration(
 		config_family=P.CONFIG_FAMILY_GDES,
-		config_name='g1_2h3g4_6',
+		config_name='g1_2h3g4_6', # 79.50
 		net_class=basemodel.top3.Net,
 		batch_size=64,
 		num_epochs=20,
@@ -598,7 +598,7 @@ CONFIG_LIST = [
 	
 	Configuration(
 		config_family=P.CONFIG_FAMILY_GDES,
-		config_name='g1_3h4g5_6',
+		config_name='g1_3h4g5_6', # 81.53
 		net_class=basemodel.top4.Net,
 		batch_size=64,
 		num_epochs=20,
@@ -618,7 +618,7 @@ CONFIG_LIST = [
 	
 	Configuration(
 		config_family=P.CONFIG_FAMILY_GDES,
-		config_name='g1_4h5g6',
+		config_name='g1_4h5g6', # 83.90
 		net_class=basemodel.fc.Net,
 		batch_size=64,
 		num_epochs=20,
@@ -638,7 +638,7 @@ CONFIG_LIST = [
 	
 	Configuration(
 		config_family=P.CONFIG_FAMILY_GDES,
-		config_name='g1h2_3g4_6',
+		config_name='g1h2_3g4_6', # 75.42
 		net_class=basemodel.top3.Net,
 		batch_size=64,
 		num_epochs=20,
@@ -658,7 +658,7 @@ CONFIG_LIST = [
 	
 	Configuration(
 		config_family=P.CONFIG_FAMILY_GDES,
-		config_name='g1_2h3_4g5_6',
+		config_name='g1_2h3_4g5_6', # 77.00
 		net_class=basemodel.top4.Net,
 		batch_size=64,
 		num_epochs=20,
@@ -678,7 +678,7 @@ CONFIG_LIST = [
 	
 	Configuration(
 		config_family=P.CONFIG_FAMILY_GDES,
-		config_name='g1_3h4_5g6',
+		config_name='g1_3h4_5g6', # 79.17
 		net_class=basemodel.fc.Net,
 		batch_size=64,
 		num_epochs=20,
@@ -698,7 +698,7 @@ CONFIG_LIST = [
 	
 	Configuration(
 		config_family=P.CONFIG_FAMILY_GDES,
-		config_name='g1h2_4g5_6',
+		config_name='g1h2_4g5_6', # 69.38
 		net_class=basemodel.top4.Net,
 		batch_size=64,
 		num_epochs=20,
@@ -718,7 +718,7 @@ CONFIG_LIST = [
 	
 	Configuration(
 		config_family=P.CONFIG_FAMILY_GDES,
-		config_name='g1_2h3_5g6',
+		config_name='g1_2h3_5g6', # 68.44
 		net_class=basemodel.fc.Net,
 		batch_size=64,
 		num_epochs=20,
@@ -738,7 +738,7 @@ CONFIG_LIST = [
 	
 	Configuration(
 		config_family=P.CONFIG_FAMILY_GDES,
-		config_name='g1h2_5g6',
+		config_name='g1h2_5g6', # 55.91
 		net_class=basemodel.fc.Net,
 		batch_size=64,
 		num_epochs=20,
