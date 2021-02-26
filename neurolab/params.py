@@ -1,0 +1,143 @@
+import os
+import torch, torchvision
+import numpy as np
+import scipy
+import sklearn
+import PIL
+from . import __version__
+
+
+# Experiment configuration parameters
+MODE_TRN = 'train'
+MODE_TST = 'test'
+DEFAULT_MODE = MODE_TST
+DEFAULT_CONFIG = 'neurolab.examples.configs.vision.config_6l'
+DEFAULT_SEEDS = [0]
+DEFAULT_TOKENS = None
+DEFAULT_HPSEARCH = False
+DEFAULT_HPSEEDS = [100]
+DEFAULT_CHECKPOINT = None
+DEFAULT_RESTART = False
+DEFAULT_BRANCH = None
+DEFAULT_STACK = 'neurolab.examples.stacks.vision.stack_knn_on_layers'
+
+# Environment parameters
+DEVICE = 'cpu'
+PROGRESS_INTERVAL = 2 # Periodicity (in seconds) to print progress information while iterating over a dataset (lower bound)
+CHECKPOINT_INTERVAL = 1 # How often to checkpoint the experiment state
+CLEARHIST = False # Whether to keep the last saved checkpoint only and clear the old checkpoint history
+CSV_CI_LEVELS = [0.9, 0.95, 0.98, 0.99, 0.995] # Confidence interval levels to be computed when saving results to csv
+CONVERGENCE_PERC_LEVELS = [0.05, 0.02] # Percentage levels to be used to measure at which training epoch the result has reached a given percentage of the best result (i.e. the convercence time).
+HIGHER_IS_BETTER = True # Whether the result produced by the current Experiment is HB or LB. This flag should be set during Experiment initialization
+STR_TOKEN = '<token>'
+
+# Dictionary keys for global params
+KEY_GLB_DATASEEDS = 'data_seeds'
+KEY_GLB_NUM_WORKERS = 'num_workers'
+KEY_GLB_MU = 'mu'
+
+# Global params
+GLB_PARAMS = {
+	KEY_GLB_DATASEEDS: [200],
+	KEY_GLB_NUM_WORKERS: 4, # Number of threads to perform pre-processing operations in parallel
+	KEY_GLB_MU: 0.1, # Exponential running average smoothing constant used during object recognition training to evaluate smooth variation of training accuracy over time.
+}
+
+ADDITIONAL_INFO = {
+	'Pytorch vers.': torch.__version__,
+	'Torchvision vers.': torchvision.__version__ ,
+	'PIL vers.': PIL.__version__,
+	'Numpy vers.': np.__version__,
+	'Scipy vers.': scipy.__version__,
+	'Sklearn vers.': sklearn.__version__,
+	'Neurolab vers.': __version__,
+}
+
+# Folder names
+PROJECT_ROOT = '.'
+DATASETS_FOLDER = os.path.join(PROJECT_ROOT, 'datasets')
+STATS_FOLDER =  os.path.join(DATASETS_FOLDER, 'stats')
+RESULT_FOLDER = os.path.join(PROJECT_ROOT, 'results')
+HPEXP_RESULT_FOLDER = os.path.join(PROJECT_ROOT, 'hpresults')
+
+# Dictionary keys for experiment stacks
+KEY_STACK_CONFIG = 'stack_config'
+KEY_STACK_MODE = 'stack_mode'
+KEY_STACK_DEVICE = 'stack_device'
+KEY_STACK_TOKENS = 'stack_tokens'
+KEY_STACK_HPSEARCH = 'stack_hpsearch'
+KEY_STACK_HPSEEDS = 'stack_hpseeds'
+KEY_STACK_DATASEEDS = 'stack_dataseeds'
+KEY_STACK_SEEDS = 'stack_seeds'
+KEY_STACK_CHECKPOINT = 'stack_checkpoint'
+KEY_STACK_RESTART = 'stack_restart'
+KEY_STACK_CLEARHIST = 'stack_clearhist'
+KEY_STACK_BRANCH = 'stack_branch'
+
+# Dictionary keys for config options
+KEY_EXPERIMENT = 'experiment'
+KEY_NET_MODULES = 'net_module'
+KEY_NET_MDL_PATHS = 'net_mdl_paths'
+KEY_NET_OUTPUTS = 'net_outputs'
+KEY_PRE_NET_MODULES = 'pre_net_modules'
+KEY_PRE_NET_MDL_PATHS = 'pre_net_mdl_paths'
+KEY_PRE_NET_OUTPUTS = 'pre_net_outputs'
+KEY_DATA_MANAGER = 'data_manager'
+KEY_DATASET_METADATA = 'dataset_metadata'
+KEY_DATASET = 'dataset'
+KEY_DS_INPUT_SHAPE = 'ds_input_shape'
+KEY_DS_TRN_SET_SIZE = 'ds_trn_set_size'
+KEY_DS_VAL_SET_SIZE = 'ds_val_set_size'
+KEY_DS_TST_SET_SIZE = 'ds_tst_set_size'
+KEY_DS_NUM_CLASSES = 'ds_num_classes'
+KEY_DS_USE_LBL_SPLIT = 'ds_use_lbl_split'
+KEY_INPUT_SHAPE = 'input_shape'
+KEY_TOT_TRN_SAMPLES = 'tot_trn_samples'
+KEY_NUM_TRN_SAMPLES = 'num_trn_samples'
+KEY_NUM_VAL_SAMPLES = 'num_val_samples'
+KEY_NUM_TST_SAMPLES = 'num_tst_samples'
+KEY_BATCHSIZE = 'batchsize'
+KEY_WHITEN = 'whiten'
+KEY_AUGMENT_MANAGER = 'augment_manager'
+KEY_AUGM_BEFORE_STATS = 'augm_before_stats'
+KEY_AUGM_STAT_PASSES = 'augm_stat_passes'
+KEY_NUM_EPOCHS = 'num_epochs'
+KEY_TOPKACC_K = 'topkacc_k'
+KEY_AUTOENC_RECONSTR = 'autoenc_reconstr'
+KEY_VAE_MU = 'vae_mu'
+KEY_VAE_LOG_VAR = 'vae_log_var'
+KEY_ELBO_BETA = 'elbo_beta'
+KEY_LOSS_METRIC_MANAGER = 'loss_metric_manager'
+KEY_CRIT_METRIC_MANAGER = 'crit_metric_manager'
+KEY_OPTIM_MANAGER = 'optim_manager'
+KEY_SCHED_MANAGER = 'sched_manager'
+KEY_LOCAL_LRN_RULE = 'local_lrn_rule'
+KEY_ALPHA = 'alpha'
+KEY_LEARNING_RATE = 'learning_rate'
+KEY_LR_DECAY = 'lr_decay'
+KEY_MILESTONES = 'milestones'
+KEY_MOMENTUM = 'momentum'
+KEY_L2_PENALTY = 'l2_penalty'
+KEY_NESTEROV = 'nesterov'
+KEY_EVAL_INTERVAL_SCHEDULE = 'eval_interval_schedule'
+KEY_DROPOUT_P = 'dropout_p'
+KEY_DEEP_TEACHER_SIGNAL = 'deep_teacher_signal'
+KEY_HPMANAGER = 'hpmanager'
+KEY_HPSEARCH_PARAMS = 'hpsearch_params'
+KEY_DA_REL_DELTA = 'da_rel_delta'
+KEY_DA_JIT_BRIGHTNESS = 'da_jit_brightness'
+KEY_DA_JIT_CONTRAST = 'da_jit_contrast'
+KEY_DA_JIT_SATURATION = 'da_jit_saturation'
+KEY_DA_JIT_HUE = 'da_jit_hue'
+KEY_DA_JIT_P = 'da_jit_p'
+KEY_DA_GREYSCALE_P = 'da_grayscale_p'
+KEY_DA_PERSP_SCALE = 'da_persp_scale'
+KEY_DA_PERSP_P = 'da_persp_p'
+KEY_DA_RESIZE_P = 'da_resize_p'
+KEY_DA_ROT_DEGREES = 'da_rot_degrees'
+KEY_DA_ROT_P = 'da_rot_p'
+KEY_DA_TRANSL_P = 'da_transl_p'
+KEY_SKCLF_NUM_SAMPLES = 'skclf_num_samples'
+KEY_NYSTROEM_N_COMPONENTS = 'nystroem_n_components'
+KEY_KNN_N_NEIGHBORS = 'knn_n_neighbors'
+
