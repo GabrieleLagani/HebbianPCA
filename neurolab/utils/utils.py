@@ -5,7 +5,7 @@ import time
 import csv
 import random
 import matplotlib
-#matplotlib.use('Agg')
+matplotlib.use('Agg')
 from matplotlib import pyplot as plt
 import scipy.stats as st
 import numpy as np
@@ -189,11 +189,11 @@ def update_csv(iter_id, result, path, ci_levels=(0.9, 0.95, 0.98, 0.99, 0.995)):
 		for k, v in d.items(): writer.writerow([k, v])
 		if len(d) > 1:
 			values = list(map(float, d.values()))
-			avg = sum(values)/len(d)
+			avg = sum(values)/len(values)
 			se = st.sem(values)
 			writer.writerow([AVG_KEY, str(avg)])
 			for ci_lvl in ci_levels:
-				ci = st.t.interval(ci_lvl, len(d) - 1, loc=avg, scale=se)
+				ci = st.t.interval(ci_lvl, len(values) - 1, loc=avg, scale=se)
 				ci_str = "+/- " + str((ci[1] - ci[0])/2)
 				writer.writerow([CI_KEYS[ci_lvl], ci_str])
 

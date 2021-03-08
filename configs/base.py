@@ -25,8 +25,6 @@ config_1l = {
     P.KEY_MOMENTUM: 0.9,
     P.KEY_L2_PENALTY: 5e-2,
 	P.KEY_DROPOUT_P: 0.5,
-	P.KEY_HPMANAGER: 'neurolab.hpsearch.DiscAltMinHPManager',
-	P.KEY_HPSEARCH_PARAMS: {P.KEY_LEARNING_RATE: [1e-4, 1e-3], P.KEY_L2_PENALTY: [5e-2, 5e-3]},
 }
 
 config_1l_hebb = {
@@ -151,5 +149,17 @@ sk_on_gdes_layer = {
 	P.KEY_PRE_NET_MODULES: ['models.gdes.model_1l.Net'],
 	P.KEY_PRE_NET_MDL_PATHS: [P.PROJECT_ROOT + '/results/configs/base/config_1l/iter_' + P.STR_TOKEN + '/model0.pt'],
 	P.KEY_PRE_NET_OUTPUTS: ['bn1'],
+}
+
+multiexp_fc_on_gdes_layer = {
+	P.KEY_EXPERIMENT: 'neurolab.experiment.multiexp.MultiExperiment',
+	P.KEY_SUBCONFIG_LIST: ['configs.base.config_1l', 'configs.base.fc_on_gdes_layer'],
+	'exp0+exp1:' + P.KEY_NUM_EPOCHS: 2,
+	'exp0+exp1:' + P.KEY_LEARNING_RATE: 1e-3,
+	'exp0:' + P.KEY_L2_PENALTY: 5e-2,
+	'exp1:' + P.KEY_L2_PENALTY: 5e-4,
+	'exp1:' + P.KEY_PRE_NET_MDL_PATHS: ['exp0/iter_' + P.STR_TOKEN + '/model0.pt'],
+	P.KEY_HPMANAGER: 'neurolab.hpsearch.DiscAltMinHPManager',
+	P.KEY_HPSEARCH_PARAMS: {'exp0+exp1:' + P.KEY_LEARNING_RATE: [1e-4, 1e-3], 'exp0:' + P.KEY_L2_PENALTY: [5e-2, 5e-3, 5e-4], 'exp1:' + P.KEY_L2_PENALTY: [5e-2, 5e-3, 5e-4]},
 }
 	

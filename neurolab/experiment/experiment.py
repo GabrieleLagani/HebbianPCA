@@ -27,7 +27,7 @@ class Experiment:
 		self.best_result = None # Best evaluation result so far
 		self.best_epoch = 0 # Epoch at which best evaluation result occurred
 		self.best_model_dicts = {} # Collection of model dictionaries corresponding to the net_list that produced best result
-		self.convergence_epochs = {perc: 0 for perc in P.CONVERGENCE_PERC_LEVELS}
+		self.convergence_epochs = {perc: 0 for perc in P.DEFAULT_CONVTHRESHOLDS}
 		
 		# Determines how often we want to validate. Eval interval schedule is in config options because we might want
 		# to save more often for tasks that take longer, hence each task has its own depending on how long it takes.
@@ -53,6 +53,7 @@ class Experiment:
 			'eval_interval': self.eval_interval,
 			'net_list': [self.net_list[i].state_dict() for i in range(len(self.net_list))],
 			'criteria': [utils.obj2dict(c) for c in self.criteria],
+			'crit_names': self.crit_names,
 			'loss': utils.obj2dict(self.loss),
 			'optimizer': utils.obj2dict(self.optimizer),
 			'scheduler': utils.obj2dict(self.scheduler),
@@ -75,6 +76,7 @@ class Experiment:
 		for i in range(len(self.pre_net_list)): self.pre_net_list[i].to(P.DEVICE)
 		utils.set_rng_state(self.rng_state)
 		for i in range(self.num_criteria): self.criteria[i] = utils.dict2obj(d['criteria'][i], self.criteria[i])
+		self.crit_names = d['crit_names']
 		if self.config.MODE == P.MODE_TRN:
 			self.loss = utils.dict2obj(d['loss'], self.loss)
 			param_groups = []
@@ -146,6 +148,7 @@ class Experiment:
 		self.crit_managers = [utils.retrieve(crit_manager_class[i])(self.config) for i in range(self.num_criteria)]
 		P.HIGHER_IS_BETTER = self.crit_managers[0].higher_is_better() # Set the HIGHER_IS_BETTER global flag in params. By default it is True.
 		self.criteria = [self.crit_managers[i].get_metric() for i in range(self.num_criteria)]
+		self.crit_names = [self.crit_managers[i].get_name() for i in range(self.num_criteria)]
 		for i in range(self.num_criteria):
 			self.train_result_data[i] = {}
 			self.val_result_data[i] = {}
@@ -194,7 +197,7 @@ class Experiment:
 			# Update best result info
 			self.best_result = curr_res
 			self.best_epoch = self.current_epoch
-			utils.update_csv(self.config.ITER_ID, self.best_epoch, os.path.join(self.config.RESULT_BASE_FOLDER, 'convergence_epoch.csv'), ci_levels=P.CSV_CI_LEVELS)
+			utils.update_csv(self.config.ITER_ID, self.best_epoch, os.path.join(self.config.RESULT_BASE_FOLDER, 'convergence_epoch.csv'), ci_levels=P.DEFAULT_CI_LEVELS)
 			# Update convergence time info
 			for perc in self.convergence_epochs.keys():
 				for i in range(self.convergence_epochs[perc], self.current_epoch + 1):
@@ -202,7 +205,7 @@ class Experiment:
 						self.convergence_epochs[perc] = i
 						break
 				self.logger.print_and_log("{}% convergence epoch {}/{}".format(100 * perc, self.convergence_epochs[perc], self.config.CONFIG_OPTIONS[P.KEY_NUM_EPOCHS]))
-				utils.update_csv(self.config.ITER_ID, self.convergence_epochs[perc], os.path.join(self.config.RESULT_BASE_FOLDER, 'convergence_epoch_' + str(100*perc) + '_perc.csv'), ci_levels=P.CSV_CI_LEVELS)
+				utils.update_csv(self.config.ITER_ID, self.convergence_epochs[perc], os.path.join(self.config.RESULT_BASE_FOLDER, 'convergence_epoch_' + str(100*perc) + '_perc.csv'), ci_levels=P.DEFAULT_CI_LEVELS)
 			# Convert model to dict and save
 			self.logger.print_and_log("Saving new best models...")
 			for i in range(len(self.net_list)):
@@ -219,9 +222,9 @@ class Experiment:
 	
 	# Restore possibly corrupted saved files after a previous crash
 	def recover_saved_files(self):
-		utils.update_csv(self.config.ITER_ID, self.best_epoch, os.path.join(self.config.RESULT_BASE_FOLDER, 'convergence_epoch.csv'), ci_levels=P.CSV_CI_LEVELS)
+		utils.update_csv(self.config.ITER_ID, self.best_epoch, os.path.join(self.config.RESULT_BASE_FOLDER, 'convergence_epoch.csv'), ci_levels=P.DEFAULT_CI_LEVELS)
 		for perc in self.convergence_epochs.keys():
-			utils.update_csv(self.config.ITER_ID, self.convergence_epochs[perc], os.path.join(self.config.RESULT_BASE_FOLDER, 'convergence_epoch_' + str(100*perc) + '_perc.csv'), ci_levels=P.CSV_CI_LEVELS)
+			utils.update_csv(self.config.ITER_ID, self.convergence_epochs[perc], os.path.join(self.config.RESULT_BASE_FOLDER, 'convergence_epoch_' + str(100*perc) + '_perc.csv'), ci_levels=P.DEFAULT_CI_LEVELS)
 		for i in range(len(self.net_list)): utils.save_dict(self.best_model_dicts[i], self.config.SAVED_MDL_PATHS[i])
 		self.save_plots()
 	
@@ -247,7 +250,7 @@ class Experiment:
 		
 		self.logger.print_and_log("Saving test results...")
 		for i in range(self.num_criteria):
-			utils.update_csv(self.config.ITER_ID, test_res[i], os.path.join(self.config.RESULT_BASE_FOLDER, self.crit_managers[i].get_name() + '.csv'), ci_levels=P.CSV_CI_LEVELS)
+			utils.update_csv(self.config.ITER_ID, test_res[i], os.path.join(self.config.RESULT_BASE_FOLDER, self.crit_managers[i].get_name() + '.csv'), ci_levels=P.DEFAULT_CI_LEVELS)
 		self.logger.print_and_log("Saved!")
 
 	# Perform model training

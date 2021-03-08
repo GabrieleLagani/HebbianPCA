@@ -73,7 +73,7 @@ for ds in datasets:
 					ghg[str(l1) + '_' + str(l2) + '_' + lrn_rule + '_' + ds + ('_da' if da else '')] = {
 						P.KEY_EXPERIMENT: 'neurolab.experiment.VisionExperiment',
 						P.KEY_NET_MODULES: 'models.gdes.fc.Net' if l2 == num_layers[ds] - 1 else ('models.gdes.fc2.Net' if l2 == num_layers[ds] - 2 else ('models.gdes.top_' + str(num_layers[ds]) + 'l.top' + str(l2) + '.Net')),
-						P.KEY_NET_OUTPUTS: net_outputs[ds],
+						P.KEY_NET_OUTPUTS: 'fc' if l2 == num_layers[ds] - 1 else ('fc2' if l2 == num_layers[ds] - 2 else net_outputs[ds]),
 						P.KEY_DATA_MANAGER: 'neurolab.data.' + data_managers[ds],
 						P.KEY_AUGMENT_MANAGER: None if not da else 'neurolab.data.LightCustomAugmentManager',
 						P.KEY_AUGM_BEFORE_STATS: True,
