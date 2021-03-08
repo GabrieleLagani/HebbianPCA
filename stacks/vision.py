@@ -7,6 +7,7 @@ SEEDS2 = range(300, 305)
 SEEDS3 = range(400, 405)
 DATASEEDS = range(200, 205)
 
+
 gdes = {ds + ('_da' if da else ''): [] for ds in datasets for da in [False, True]}
 hebb = {lrn_rule + '_' + ds + ('_da' if da else ''): [] for lrn_rule in lrn_rules for ds in datasets for da in [False, True]}
 vae = {ds + ('_da' if da else ''): [] for ds in datasets for da in [False, True]}
