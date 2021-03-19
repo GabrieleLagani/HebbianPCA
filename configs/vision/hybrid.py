@@ -20,7 +20,7 @@ for ds in datasets:
 					P.KEY_AUGMENT_MANAGER: None if not da else 'neurolab.data.LightCustomAugmentManager',
 					P.KEY_AUGM_BEFORE_STATS: True,
 					P.KEY_AUGM_STAT_PASSES: 2,
-					P.KEY_WHITEN: None if lrn_rule != 'hwta' else 2,
+					P.KEY_WHITEN: None if lrn_rule_keys[lrn_rule] != 'hwta' else 2,
 					P.KEY_TOT_TRN_SAMPLES: tot_trn_samples[ds],
 					P.KEY_BATCHSIZE: 64,
 					P.KEY_INPUT_SHAPE: input_shapes[ds],
