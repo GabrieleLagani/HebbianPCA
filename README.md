@@ -10,13 +10,14 @@ followed by SGD fine-tuning of a final linear classifier. The approach
 performs better than simple end-to-end backprop training in scenarios 
 with limited labeled samples availability.
 
+This work, which focuses on Hebbian PCA algorithms, is a continuation of https://github.com/GabrieleLagani/HebbianLearningThesis
+You might want to have a look also at the latest repo! https://github.com/GabrieleLagani/HebbianLearning
+
 We also introduce a preliminary version of the `neurolab` package, a
 simple, extensible, Pytorch-based framework for deep learning 
 experiments, providing functionalities for handling experimental 
 configurations, reproducibility, checkpointing/resuming experiment state, 
 hyperparameter search, and other utilities.
-
-You might want to have a look also at the latest repo! https://github.com/GabrieleLagani/HebbianLearning
 
 In order to launch an experiment session, type:  
 `PYTHONPATH=<project root> python <project root>/runexp.py --config <dotter.path.to.config.object> --mode <mode> --device <device> --clearhist --restart`  
