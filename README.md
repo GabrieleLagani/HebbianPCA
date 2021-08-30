@@ -7,8 +7,8 @@ layers trained by SGD are studied.
 A semi-supervised approach is also considered, where unsupervised
 Hebbian learning is used to pre-train internal layers of a DNN, 
 followed by SGD fine-tuning of a final linear classifier. The approach
-performs better than simple end-to-end backprop training in low
-sample efficiency scenarios.
+performs better than simple end-to-end backprop training in scenarios 
+with limited labeled samples availability.
 
 We also introduce a preliminary version of the `neurolab` package, a
 simple, extensible, Pytorch-based framework for deep learning 
