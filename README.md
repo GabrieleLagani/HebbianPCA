@@ -16,6 +16,8 @@ experiments, providing functionalities for handling experimental
 configurations, reproducibility, checkpointing/resuming experiment state, 
 hyperparameter search, and other utilities.
 
+You might want to have a look also at the latest repo! https://github.com/GabrieleLagani/HebbianLearning
+
 In order to launch an experiment session, type:  
 `PYTHONPATH=<project root> python <project root>/runexp.py --config <dotter.path.to.config.object> --mode <mode> --device <device> --clearhist --restart`  
 Where `<dotter.path.to.config.object>` is the path, in dotted notation,
