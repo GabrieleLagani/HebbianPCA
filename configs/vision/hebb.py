@@ -211,7 +211,7 @@ for ds in datasets:
 				
 				prec_on_hebb_layer[str(l) + '_' + lrn_rule + '_' + ds + ('_da' if da else '')] = {
 					P.KEY_EXPERIMENT: 'neurolab.experiment.VisionExperiment',
-					P.KEY_NET_MODULES: 'neurolab.model.skclassif.KNNClassifier',
+					P.KEY_NET_MODULES: 'neurolab.model.skclassif.Retriever',
 					P.KEY_NET_OUTPUTS: 'clf',
 					P.KEY_DATA_MANAGER: 'neurolab.data.' + data_managers[ds],
 					P.KEY_AUGMENT_MANAGER: None,
@@ -235,7 +235,7 @@ for ds in datasets:
 				
 				prec_on_hebb_layer_ft[str(l) + '_' + lrn_rule + '_' + ds + ('_da' if da else '')] = {
 					P.KEY_EXPERIMENT: 'neurolab.experiment.VisionExperiment',
-					P.KEY_NET_MODULES: 'neurolab.model.skclassif.KNNClassifier',
+					P.KEY_NET_MODULES: 'neurolab.model.skclassif.Retriever',
 					P.KEY_NET_OUTPUTS: 'clf',
 					P.KEY_DATA_MANAGER: 'neurolab.data.' + data_managers[ds],
 					P.KEY_AUGMENT_MANAGER: None,

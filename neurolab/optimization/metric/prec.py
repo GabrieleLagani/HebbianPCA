@@ -1,12 +1,19 @@
+import torch
+
 from ..optimization import MetricManager
+from neurolab import params as P
 
 
-# Evaluate outputs on a retrieval experiment basis: outputs must contain percentage of retrieved elements for each class.
-# Return percentage of retrieved elements of the correct class (average precision). The experiment class is going to
-# average this result over a batch of data, thus finally obtaining a Mean Average Precision (MAP) score.
+# Evaluate outputs on a retrieval experiment basis: outputs must contain list of retrieved elements for each query/input.
+# Return average precision score @k (number of retrieved elements), renormalized to 0, 1, averaged over all the queries
+# (Mean Average Precision - MAP score) over the batch.
 class PrecMetric:
 	def __call__(self, outputs, targets):
-		return outputs.gather(dim=1, index=targets.view(-1, 1)).mean().item()
+		k = outputs.size(1)
+		outputs = (outputs == targets.view(-1, 1)).float()
+		prec_at_i = outputs.cumsum(dim=1)/torch.arange(1, k + 1, device=P.DEVICE).float().view(1, -1)
+		aps = (outputs * prec_at_i).sum(dim=1)/k
+		return aps.mean().item()
 
 # Criterion manager for MAP
 class PrecMetricManager(MetricManager):
