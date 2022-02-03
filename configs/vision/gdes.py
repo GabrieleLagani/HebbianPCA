@@ -73,14 +73,14 @@ for ds in datasets:
 			    P.KEY_L2_PENALTY: 5e-4,
 				P.KEY_DROPOUT_P: 0.5,
 				P.KEY_PRE_NET_MODULES: ['models.gdes.model_' + str(num_layers[ds]) + 'l.Net'],
-				P.KEY_PRE_NET_MDL_PATHS: [P.PROJECT_ROOT + '/results/configs/vision/gdes/config_base_gdes[' + ds + ('_da' if da else '') + ']/iter_' + P.STR_TOKEN + '/model0.pt'],
+				P.KEY_PRE_NET_MDL_PATHS: [P.PROJECT_ROOT + '/results/configs/vision/gdes/config_base_gdes[' + ds + ('_da' if da else '') + ']/iter_' + P.STR_TOKEN + '/models/model0.pt'],
 				P.KEY_PRE_NET_OUTPUTS: ['bn' + str(l)],
 			}
 			
 			gdes_fc_on_gdes_layer_ft[str(l) + '_' + ds + ('_da' if da else '')] = {
 				P.KEY_EXPERIMENT: 'neurolab.experiment.VisionExperiment',
 				P.KEY_NET_MODULES: ['models.gdes.model_6l.Net', 'models.gdes.fc.Net'],
-				P.KEY_NET_MDL_PATHS: [P.PROJECT_ROOT + '/results/configs/vision/gdes/config_base_gdes[' + ds + ('_da' if da else '') + ']/iter_' + P.STR_TOKEN + '/model0.pt'],
+				P.KEY_NET_MDL_PATHS: [P.PROJECT_ROOT + '/results/configs/vision/gdes/config_base_gdes[' + ds + ('_da' if da else '') + ']/iter_' + P.STR_TOKEN + '/models/model0.pt'],
 				P.KEY_NET_OUTPUTS: ['bn' + str(l), 'fc'],
 				P.KEY_DATA_MANAGER: 'neurolab.data.' + data_managers[ds],
 				P.KEY_AUGMENT_MANAGER: None if not da else 'neurolab.data.LightCustomAugmentManager',
@@ -122,7 +122,7 @@ for ds in datasets:
 				P.KEY_TOPKACC_K: [1, 5],
 			    P.KEY_LEARNING_RATE: 1e-3,
 				P.KEY_PRE_NET_MODULES: ['models.gdes.model_' + str(num_layers[ds]) + 'l.Net'],
-				P.KEY_PRE_NET_MDL_PATHS: [P.PROJECT_ROOT + '/results/configs/vision/gdes/config_base_gdes[' + ds + ('_da' if da else '') + ']/iter_' + P.STR_TOKEN + '/model0.pt'],
+				P.KEY_PRE_NET_MDL_PATHS: [P.PROJECT_ROOT + '/results/configs/vision/gdes/config_base_gdes[' + ds + ('_da' if da else '') + ']/iter_' + P.STR_TOKEN + '/models/model0.pt'],
 				P.KEY_PRE_NET_OUTPUTS: ['bn' + str(l)],
 			}
 			
@@ -144,7 +144,7 @@ for ds in datasets:
 				P.KEY_TOPKACC_K: [1, 5],
 			    P.KEY_LEARNING_RATE: 1e-3,
 				P.KEY_PRE_NET_MODULES: ['models.gdes.model_' + str(num_layers[ds]) + 'l.Net'],
-				P.KEY_PRE_NET_MDL_PATHS: [P.PROJECT_ROOT + '/results/configs/vision/gdes/gdes_fc_on_gdes_layer_ft[' + str(l) + '_' + ds + ('_da' if da else '') + ']/iter_' + P.STR_TOKEN + '/model0.pt'],
+				P.KEY_PRE_NET_MDL_PATHS: [P.PROJECT_ROOT + '/results/configs/vision/gdes/gdes_fc_on_gdes_layer_ft[' + str(l) + '_' + ds + ('_da' if da else '') + ']/iter_' + P.STR_TOKEN + '/models/model0.pt'],
 				P.KEY_PRE_NET_OUTPUTS: ['bn' + str(l)],
 			}
 			
@@ -173,7 +173,7 @@ for ds in datasets:
 			    P.KEY_L2_PENALTY: 5e-4,
 				P.KEY_DROPOUT_P: 0.5,
 				P.KEY_PRE_NET_MODULES: ['models.gdes.model_' + str(num_layers[ds]) + 'l.Net'],
-				P.KEY_PRE_NET_MDL_PATHS: [P.PROJECT_ROOT + '/results/configs/vision/gdes/config_base_gdes[' + ds + ('_da' if da else '') + ']/iter_' + P.STR_TOKEN + '/model0.pt'],
+				P.KEY_PRE_NET_MDL_PATHS: [P.PROJECT_ROOT + '/results/configs/vision/gdes/config_base_gdes[' + ds + ('_da' if da else '') + ']/iter_' + P.STR_TOKEN + '/models/model0.pt'],
 				P.KEY_PRE_NET_OUTPUTS: ['bn' + str(l)],
 			}
 			
@@ -199,7 +199,7 @@ for ds in datasets:
 					PP.KEY_WTA_K: lrn_rule_k[lrn_rule],
 					P.KEY_DEEP_TEACHER_SIGNAL: lrn_rule_dts[lrn_rule],
 					P.KEY_PRE_NET_MODULES: ['models.gdes.model_' + str(num_layers[ds]) + 'l.Net'],
-					P.KEY_PRE_NET_MDL_PATHS: [P.PROJECT_ROOT + '/results/configs/vision/gdes/config_base_gdes[' + ds + ('_da' if da else '') + ']/iter_' + P.STR_TOKEN + '/model0.pt'],
+					P.KEY_PRE_NET_MDL_PATHS: [P.PROJECT_ROOT + '/results/configs/vision/gdes/config_base_gdes[' + ds + ('_da' if da else '') + ']/iter_' + P.STR_TOKEN + '/models/model0.pt'],
 					P.KEY_PRE_NET_OUTPUTS: ['bn' + str(l)],
 				}
 			
@@ -221,7 +221,7 @@ for ds in datasets:
 				P.KEY_NYSTROEM_N_COMPONENTS: 100,
 				P.KEY_KNN_N_NEIGHBORS: samples_per_class[ds],
 				P.KEY_PRE_NET_MODULES: ['models.gdes.model_' + str(num_layers[ds]) + 'l.Net'],
-				P.KEY_PRE_NET_MDL_PATHS: [P.PROJECT_ROOT + '/results/configs/vision/gdes/config_base_gdes[' + ds + ('_da' if da else '') + ']/iter_' + P.STR_TOKEN + '/model0.pt'],
+				P.KEY_PRE_NET_MDL_PATHS: [P.PROJECT_ROOT + '/results/configs/vision/gdes/config_base_gdes[' + ds + ('_da' if da else '') + ']/iter_' + P.STR_TOKEN + '/models/model0.pt'],
 				P.KEY_PRE_NET_OUTPUTS: ['bn' + str(l)],
 			}
 			
@@ -243,7 +243,7 @@ for ds in datasets:
 				P.KEY_NYSTROEM_N_COMPONENTS: 100,
 				P.KEY_KNN_N_NEIGHBORS: samples_per_class[ds],
 				P.KEY_PRE_NET_MODULES: ['models.gdes.model_' + str(num_layers[ds]) + 'l.Net'],
-				P.KEY_PRE_NET_MDL_PATHS: [P.PROJECT_ROOT + '/results/configs/vision/gdes/gdes_fc_on_gdes_layer_ft[' + str(l) + '_' + ds + ('_da' if da else '') + ']/iter_' + P.STR_TOKEN + '/model0.pt'],
+				P.KEY_PRE_NET_MDL_PATHS: [P.PROJECT_ROOT + '/results/configs/vision/gdes/gdes_fc_on_gdes_layer_ft[' + str(l) + '_' + ds + ('_da' if da else '') + ']/iter_' + P.STR_TOKEN + '/models/model0.pt'],
 				P.KEY_PRE_NET_OUTPUTS: ['bn' + str(l)],
 			}
 			
@@ -266,7 +266,7 @@ for ds in datasets:
 				P.KEY_NYSTROEM_N_COMPONENTS: 100,
 				P.KEY_KNN_N_NEIGHBORS: 10,
 				P.KEY_PRE_NET_MODULES: ['models.gdes.model_' + str(num_layers[ds]) + 'l.Net'],
-				P.KEY_PRE_NET_MDL_PATHS: [P.PROJECT_ROOT + '/results/configs/vision/gdes/config_base_gdes[' + ds + ('_da' if da else '') + ']/iter_' + P.STR_TOKEN + '/model0.pt'],
+				P.KEY_PRE_NET_MDL_PATHS: [P.PROJECT_ROOT + '/results/configs/vision/gdes/config_base_gdes[' + ds + ('_da' if da else '') + ']/iter_' + P.STR_TOKEN + '/models/model0.pt'],
 				P.KEY_PRE_NET_OUTPUTS: ['bn' + str(l)],
 			}
 			
@@ -289,7 +289,7 @@ for ds in datasets:
 				P.KEY_NYSTROEM_N_COMPONENTS: 100,
 				P.KEY_KNN_N_NEIGHBORS: 10,
 				P.KEY_PRE_NET_MODULES: ['models.gdes.model_' + str(num_layers[ds]) + 'l.Net'],
-				P.KEY_PRE_NET_MDL_PATHS: [P.PROJECT_ROOT + '/results/configs/vision/gdes/gdes_fc_on_gdes_layer_ft[' + str(l) + '_' + ds + ('_da' if da else '') + ']/iter_' + P.STR_TOKEN + '/model0.pt'],
+				P.KEY_PRE_NET_MDL_PATHS: [P.PROJECT_ROOT + '/results/configs/vision/gdes/gdes_fc_on_gdes_layer_ft[' + str(l) + '_' + ds + ('_da' if da else '') + ']/iter_' + P.STR_TOKEN + '/models/model0.pt'],
 				P.KEY_PRE_NET_OUTPUTS: ['bn' + str(l)],
 			}
 			
@@ -311,7 +311,7 @@ for ds in datasets:
 				P.KEY_SKCLF_NUM_SAMPLES: tot_trn_samples[ds] if not da else 2*tot_trn_samples[ds],
 				P.KEY_NYSTROEM_N_COMPONENTS: 100,
 				P.KEY_PRE_NET_MODULES: ['models.gdes.model_' + str(num_layers[ds]) + 'l.Net'],
-				P.KEY_PRE_NET_MDL_PATHS: [P.PROJECT_ROOT + '/results/configs/vision/gdes/config_base_gdes[' + ds + ('_da' if da else '') + ']/iter_' + P.STR_TOKEN + '/model0.pt'],
+				P.KEY_PRE_NET_MDL_PATHS: [P.PROJECT_ROOT + '/results/configs/vision/gdes/config_base_gdes[' + ds + ('_da' if da else '') + ']/iter_' + P.STR_TOKEN + '/models/model0.pt'],
 				P.KEY_PRE_NET_OUTPUTS: ['bn' + str(l)],
 			}
 			
@@ -333,7 +333,7 @@ for ds in datasets:
 				P.KEY_SKCLF_NUM_SAMPLES: tot_trn_samples[ds] if not da else 2*tot_trn_samples[ds],
 				P.KEY_NYSTROEM_N_COMPONENTS: 100,
 				P.KEY_PRE_NET_MODULES: ['models.gdes.model_' + str(num_layers[ds]) + 'l.Net'],
-				P.KEY_PRE_NET_MDL_PATHS: [P.PROJECT_ROOT + '/results/configs/vision/gdes/gdes_fc_on_gdes_layer_ft[' + str(l) + '_' + ds + ('_da' if da else '') + ']/iter_' + P.STR_TOKEN + '/model0.pt'],
+				P.KEY_PRE_NET_MDL_PATHS: [P.PROJECT_ROOT + '/results/configs/vision/gdes/gdes_fc_on_gdes_layer_ft[' + str(l) + '_' + ds + ('_da' if da else '') + ']/iter_' + P.STR_TOKEN + '/models/model0.pt'],
 				P.KEY_PRE_NET_OUTPUTS: ['bn' + str(l)],
 			}
 			

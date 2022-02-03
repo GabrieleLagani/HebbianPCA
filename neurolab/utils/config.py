@@ -54,7 +54,8 @@ class Config:
 		# Path where to save logs
 		self.LOG_FOLDER = os.path.join(self.RESULT_FOLDER, 'logs')
 		# Path where to save the model
-		self.SAVED_MDL_PATHS = [os.path.join(self.RESULT_FOLDER, 'model' + str(i) + '.pt') for i in range(len(self.CONFIG_OPTIONS[P.KEY_NET_MODULES]))] if self.CONFIG_OPTIONS.get(P.KEY_NET_MODULES, None) is not None else []
+		self.SAVED_MDL_FOLDER = os.path.join(self.RESULT_FOLDER, 'models')
+		self.SAVED_MDL_PATHS = [os.path.join(self.SAVED_MDL_FOLDER, 'model' + str(i) + '.pt') for i in range(len(self.CONFIG_OPTIONS[P.KEY_NET_MODULES]))] if self.CONFIG_OPTIONS.get(P.KEY_NET_MODULES, None) is not None else []
 		# Path to log file
 		self.LOG_PATH = os.path.join(self.LOG_FOLDER, 'trn_log.txt' if self.MODE == P.MODE_TRN else 'tst_log.txt')
 

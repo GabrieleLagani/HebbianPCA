@@ -39,7 +39,7 @@ for ds in datasets:
 					P.KEY_LOCAL_LRN_RULE: lrn_rule_keys[lrn_rule],
 					PP.KEY_WTA_K: lrn_rule_k[lrn_rule],
 					P.KEY_PRE_NET_MODULES: ['models.hebb.model_' + str(num_layers[ds]) + 'l.Net'],
-					P.KEY_PRE_NET_MDL_PATHS: [P.PROJECT_ROOT + '/results/configs/vision/hebb/config_base_hebb[' + lrn_rule + '_' + ds + ('_da' if da else '') + ']/iter_' + P.STR_TOKEN + '/model0.pt'],
+					P.KEY_PRE_NET_MDL_PATHS: [P.PROJECT_ROOT + '/results/configs/vision/hebb/config_base_hebb[' + lrn_rule + '_' + ds + ('_da' if da else '') + ']/iter_' + P.STR_TOKEN + '/models/model0.pt'],
 					P.KEY_PRE_NET_OUTPUTS: ['bn' + str(l)],
 				}
 				
@@ -64,7 +64,7 @@ for ds in datasets:
 					PP.KEY_WTA_K: lrn_rule_k[lrn_rule],
 					P.KEY_DEEP_TEACHER_SIGNAL: lrn_rule_dts[lrn_rule],
 				    P.KEY_PRE_NET_MODULES: ['models.gdes.model_' + str(num_layers[ds]) + 'l.Net'],
-					P.KEY_PRE_NET_MDL_PATHS: [P.PROJECT_ROOT + '/results/configs/vision/gdes/config_base_gdes[' + ds + ('_da' if da else '') + ']/iter_' + P.STR_TOKEN + '/model0.pt'],
+					P.KEY_PRE_NET_MDL_PATHS: [P.PROJECT_ROOT + '/results/configs/vision/gdes/config_base_gdes[' + ds + ('_da' if da else '') + ']/iter_' + P.STR_TOKEN + '/models/model0.pt'],
 					P.KEY_PRE_NET_OUTPUTS: ['bn' + str(l)],
 				}
 			
@@ -97,9 +97,9 @@ for ds in datasets:
 						P.KEY_LOCAL_LRN_RULE: lrn_rule_keys[lrn_rule],
 						PP.KEY_WTA_K: lrn_rule_k[lrn_rule],
 						P.KEY_PRE_NET_MODULES: ['models.gdes.model_' + str(num_layers[ds]) + 'l.Net', 'models.hebb.fc2.Net' if l1 == num_layers[ds] - 2 else ('models.hebb.top_' + str(num_layers[ds]) + 'l.top' + str(l1) + '.Net')],
-						P.KEY_PRE_NET_MDL_PATHS: [P.PROJECT_ROOT + '/results/configs/vision/gdes/config_base_gdes[' + ds + ('_da' if da else '') + ']/iter_' + P.STR_TOKEN + '/model0.pt',
-						                          P.PROJECT_ROOT + (('/results/configs/vision/gdes/hebb_fc2_on_gdes_layer[' + str(num_layers[ds] - 2) + '_' + lrn_rule + '_' + ds + ('_da' if da else '') + ']/iter_' + P.STR_TOKEN + '/model0.pt') if l1 == num_layers[ds] - 2 else 
-						                                            ('/results/configs/vision/hybrid/hebb_on_gdes_layer[' + str(l1) + '_' + lrn_rule + '_' + ds + ('_da' if da else '') + ']/iter_' + P.STR_TOKEN + '/model0.pt'))],
+						P.KEY_PRE_NET_MDL_PATHS: [P.PROJECT_ROOT + '/results/configs/vision/gdes/config_base_gdes[' + ds + ('_da' if da else '') + ']/iter_' + P.STR_TOKEN + '/models/model0.pt',
+						                          P.PROJECT_ROOT + (('/results/configs/vision/gdes/hebb_fc2_on_gdes_layer[' + str(num_layers[ds] - 2) + '_' + lrn_rule + '_' + ds + ('_da' if da else '') + ']/iter_' + P.STR_TOKEN + '/models/model0.pt') if l1 == num_layers[ds] - 2 else 
+						                                            ('/results/configs/vision/hybrid/hebb_on_gdes_layer[' + str(l1) + '_' + lrn_rule + '_' + ds + ('_da' if da else '') + ']/iter_' + P.STR_TOKEN + '/models/model0.pt'))],
 						P.KEY_PRE_NET_OUTPUTS: ['bn' + str(l1), 'bn1' if l1 == num_layers[ds] - 2 else 'bn' + str(l2)],
 					}
 
