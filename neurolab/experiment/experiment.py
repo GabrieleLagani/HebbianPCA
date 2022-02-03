@@ -106,12 +106,15 @@ class Experiment:
 				input_shape = self.config.CONFIG_OPTIONS.get(P.KEY_INPUT_SHAPE, None)
 				if i > 0: input_shape = pre_net_list[i - 1].get_output_fmap_shape(pre_net_outputs[i - 1], fwd=True)
 				pre_net_list += [utils.retrieve(pre_net_modules[i])(config=self.config, input_shape=input_shape)]
-				self.logger.print_and_log("Searching for available saved model for pre-network " + str(i) + "...")
-				pre_net_state = utils.load_dict(os.path.normpath(pre_net_mdl_paths[i]))
-				if pre_net_state is not None:
-					pre_net_list[i].load_state_dict(pre_net_state)
-					self.logger.print_and_log("Pre-network model loaded!")
-				else: self.logger.print_and_log("No saved model found for pre-network, using pre-network initialized from scratch")
+				if pre_net_mdl_paths is not None and i < len(pre_net_mdl_paths) and pre_net_mdl_paths[i] is not None:
+					self.logger.print_and_log("Searching for available saved model for pre-network " + str(i) + "...")
+					pre_net_state = utils.load_dict(os.path.normpath(pre_net_mdl_paths[i]))
+					if pre_net_state is not None:
+						pre_net_list[i].load_state_dict(pre_net_state)
+						self.logger.print_and_log("Pre-network model loaded!")
+					else:
+						self.logger.print_and_log("No valid saved model found for pre-network")
+						raise FileNotFoundError("No valid saved model found for pre-network")
 				for p in pre_net_list[i].parameters(): p.requires_grad = False
 				pre_net_list[i].eval()
 		input_shape = self.config.CONFIG_OPTIONS.get(P.KEY_INPUT_SHAPE, None)
@@ -131,7 +134,9 @@ class Experiment:
 				if loaded_model is not None:
 					net_list[i].load_state_dict(loaded_model)
 					self.logger.print_and_log("Model loaded!")
-				else: self.logger.print_and_log("No saved model found, using network initialized from scratch")
+				else:
+					self.logger.print_and_log("No valid saved model found")
+					raise FileNotFoundError("No valid saved model found")
 		# Move all models to required device
 		for i in range(len(pre_net_list)): pre_net_list[i].to(P.DEVICE)
 		for i in range(len(net_list)): net_list[i].to(P.DEVICE)

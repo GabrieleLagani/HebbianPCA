@@ -417,7 +417,7 @@ for ds in datasets:
 						P.KEY_KNN_N_NEIGHBORS: samples_per_class[ds],
 						P.KEY_LOCAL_LRN_RULE: lrn_rule_keys[lrn_rule],
 						PP.KEY_WTA_K: lrn_rule_k[lrn_rule],
-						P.KEY_PRE_NET_MODULES: ['models.gdes.model_' + str(num_layers[ds]) + 'l.Net'],
+						P.KEY_PRE_NET_MODULES: ['models.hebb.model_' + str(num_layers[ds]) + 'l.Net'],
 						P.KEY_PRE_NET_MDL_PATHS: [P.PROJECT_ROOT + '/results/configs/vision/smpleff/gdes_fc_on_hebb_layer_ft[' + str(l) + '_' + lrn_rule + '_' + ds + '_' + str(n) + ('_da' if da else '') + ']/iter_' + P.STR_TOKEN + '/model0.pt'],
 						P.KEY_PRE_NET_OUTPUTS: ['bn' + str(l)],
 					}
@@ -612,7 +612,7 @@ for ds in datasets:
 					P.KEY_PRE_NET_MDL_PATHS: [P.PROJECT_ROOT + '/results/configs/vision/smpleff/gdes_fc_on_vae_layer_ft[' + str(l) + '_' + ds + ('_da' if da else '') + ']/iter_' + P.STR_TOKEN + '/model0.pt'],
 					P.KEY_PRE_NET_OUTPUTS: ['bn' + str(l)],
 				}
-				prec_on_vae_layer_ft[str(l) + '_' + ds + ('_da' if da else '')] = {
+				prec_on_vae_layer_ft[str(l) + '_' + ds + '_' + str(n) + ('_da' if da else '')] = {
 					P.KEY_EXPERIMENT: 'neurolab.experiment.VisionExperiment',
 					P.KEY_NET_MODULES: 'neurolab.model.skclassif.Retriever',
 					P.KEY_NET_OUTPUTS: 'clf',
