@@ -144,7 +144,7 @@ sk_on_gdes_layer = {
 	P.KEY_NUM_EPOCHS: 1, #2,
 	P.KEY_CRIT_METRIC_MANAGER: 'neurolab.optimization.metric.AccMetricManager',
 	P.KEY_SKCLF_NUM_SAMPLES: 40000, #80000,
-	P.KEY_NYSTROEM_N_COMPONENTS: 100,
+	P.KEY_NYSTROEM_N_COMPONENTS: 1000,
 	P.KEY_KNN_N_NEIGHBORS: 10,
 	P.KEY_PRE_NET_MODULES: ['models.gdes.model_1l.Net'],
 	P.KEY_PRE_NET_MDL_PATHS: [P.PROJECT_ROOT + '/results/configs/base/config_1l/iter_' + P.STR_TOKEN + '/models/model0.pt'],
