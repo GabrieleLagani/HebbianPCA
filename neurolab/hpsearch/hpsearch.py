@@ -55,8 +55,8 @@ class HPSearch:
 		self.hpsearch_num = hpsearch_num
 		self.hpseed = hpseed
 		self.CONFIG_OPTIONS = utils.retrieve(self.config)
-		self.HPSEARCH_RESULT_BASE_FOLDER = os.path.join(P.HPEXP_RESULT_FOLDER, self.config.replace('.', os.sep), 'hpseed_' + str(self.hpseed))
-		self.HPSEARCH_BEST_RESULT_FOLDER = os.path.join(P.HPEXP_RESULT_FOLDER, self.config.replace('.', os.sep), 'hpseed_' + str(self.hpseed) + '_best')
+		self.HPSEARCH_RESULT_BASE_FOLDER = os.path.join(P.HPEXP_RESULT_FOLDER, self.config.replace('.', os.sep), 'hpseed' + str(self.hpseed))
+		self.HPSEARCH_BEST_RESULT_FOLDER = os.path.join(P.HPEXP_RESULT_FOLDER, self.config.replace('.', os.sep), 'hpseed' + str(self.hpseed) + '_best')
 		self.HPSEARCH_CHECKPOINT_PATH = os.path.join(self.HPSEARCH_RESULT_BASE_FOLDER, 'hpcheckpoint.pt')
 		self.HPSEARCH_LOG_PATH = os.path.join(self.HPSEARCH_RESULT_BASE_FOLDER, 'hpsearch_log.txt')
 		self.logger = utils.Logger(self.HPSEARCH_LOG_PATH)

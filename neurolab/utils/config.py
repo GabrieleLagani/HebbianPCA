@@ -46,7 +46,7 @@ class Config:
 		# Path to the folder where results are saved
 		self.RESULT_BASE_FOLDER = result_base_folder
 		# Path to the folder where the results for the specific iteration are saved
-		self.RESULT_FOLDER = os.path.join(self.RESULT_BASE_FOLDER, 'iter_' + str(self.ITER_ID))
+		self.RESULT_FOLDER = os.path.join(self.RESULT_BASE_FOLDER, 'iter' + str(self.ITER_ID))
 		# Path where to save checkpoints
 		self.CHECKPOINT_FOLDER = os.path.join(self.RESULT_FOLDER, 'checkpoints')
 		# Path where to save figures

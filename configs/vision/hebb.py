@@ -70,14 +70,14 @@ for ds in datasets:
 					P.KEY_LOCAL_LRN_RULE: lrn_rule_keys[lrn_rule],
 					PP.KEY_WTA_K: lrn_rule_k[lrn_rule],
 					P.KEY_PRE_NET_MODULES: ['models.hebb.model_' + str(num_layers[ds]) + 'l.Net'],
-					P.KEY_PRE_NET_MDL_PATHS: [P.PROJECT_ROOT + '/results/configs/vision/hebb/config_base_hebb[' + lrn_rule + '_' + ds + ('_da' if da else '') + ']/iter_' + P.STR_TOKEN + '/models/model0.pt'],
+					P.KEY_PRE_NET_MDL_PATHS: [P.PROJECT_ROOT + '/results/configs/vision/hebb/config_base_hebb[' + lrn_rule + '_' + ds + ('_da' if da else '') + ']/iter' + P.STR_TOKEN + '/models/model0.pt'],
 					P.KEY_PRE_NET_OUTPUTS: ['bn' + str(l)],
 				}
 				
 				gdes_fc_on_hebb_layer_ft[str(l) + '_' + lrn_rule + '_' + ds + ('_da' if da else '')] = {
 					P.KEY_EXPERIMENT: 'neurolab.experiment.VisionExperiment',
 					P.KEY_NET_MODULES: ['models.hebb.model_' + str(num_layers[ds]) + 'l.Net', 'models.gdes.fc.Net'],
-					P.KEY_NET_MDL_PATHS: [P.PROJECT_ROOT + '/results/configs/vision/hebb/config_base_hebb[' + lrn_rule + '_' + ds + ('_da' if da else '') + ']/iter_' + P.STR_TOKEN + '/models/model0.pt'],
+					P.KEY_NET_MDL_PATHS: [P.PROJECT_ROOT + '/results/configs/vision/hebb/config_base_hebb[' + lrn_rule + '_' + ds + ('_da' if da else '') + ']/iter' + P.STR_TOKEN + '/models/model0.pt'],
 					P.KEY_NET_OUTPUTS: ['bn' + str(l), 'fc'],
 					P.KEY_DATA_MANAGER: 'neurolab.data.' + data_managers[ds],
 					P.KEY_AUGMENT_MANAGER: None if not da else 'neurolab.data.LightCustomAugmentManager',
@@ -125,7 +125,7 @@ for ds in datasets:
 					P.KEY_LOCAL_LRN_RULE: lrn_rule_keys[lrn_rule],
 					PP.KEY_WTA_K: lrn_rule_k[lrn_rule],
 					P.KEY_PRE_NET_MODULES: ['models.hebb.model_' + str(num_layers[ds]) + 'l.Net'],
-					P.KEY_PRE_NET_MDL_PATHS: [P.PROJECT_ROOT + '/results/configs/vision/hebb/config_base_hebb[' + lrn_rule + '_' + ds + ('_da' if da else '') + ']/iter_' + P.STR_TOKEN + '/models/model0.pt'],
+					P.KEY_PRE_NET_MDL_PATHS: [P.PROJECT_ROOT + '/results/configs/vision/hebb/config_base_hebb[' + lrn_rule + '_' + ds + ('_da' if da else '') + ']/iter' + P.STR_TOKEN + '/models/model0.pt'],
 					P.KEY_PRE_NET_OUTPUTS: ['bn' + str(l)],
 				}
 				
@@ -149,7 +149,7 @@ for ds in datasets:
 					P.KEY_LOCAL_LRN_RULE: lrn_rule_keys[lrn_rule],
 					PP.KEY_WTA_K: lrn_rule_k[lrn_rule],
 					P.KEY_PRE_NET_MODULES: ['models.hebb.model_' + str(num_layers[ds]) + 'l.Net'],
-					P.KEY_PRE_NET_MDL_PATHS: [P.PROJECT_ROOT + '/results/configs/vision/hebb/gdes_fc_on_hebb_layer_ft[' + str(l) + '_' + lrn_rule + '_' + ds + ('_da' if da else '') + ']/iter_' + P.STR_TOKEN + '/models/model0.pt'],
+					P.KEY_PRE_NET_MDL_PATHS: [P.PROJECT_ROOT + '/results/configs/vision/hebb/gdes_fc_on_hebb_layer_ft[' + str(l) + '_' + lrn_rule + '_' + ds + ('_da' if da else '') + ']/iter' + P.STR_TOKEN + '/models/model0.pt'],
 					P.KEY_PRE_NET_OUTPUTS: ['bn' + str(l)],
 				}
 				
@@ -180,7 +180,7 @@ for ds in datasets:
 					P.KEY_LOCAL_LRN_RULE: lrn_rule_keys[lrn_rule],
 					PP.KEY_WTA_K: lrn_rule_k[lrn_rule],
 					P.KEY_PRE_NET_MODULES: ['models.hebb.model_' + str(num_layers[ds]) + 'l.Net'],
-					P.KEY_PRE_NET_MDL_PATHS: [P.PROJECT_ROOT + '/results/configs/vision/hebb/config_base_hebb[' + lrn_rule + '_' + ds + ('_da' if da else '') + ']/iter_' + P.STR_TOKEN + '/models/model0.pt'],
+					P.KEY_PRE_NET_MDL_PATHS: [P.PROJECT_ROOT + '/results/configs/vision/hebb/config_base_hebb[' + lrn_rule + '_' + ds + ('_da' if da else '') + ']/iter' + P.STR_TOKEN + '/models/model0.pt'],
 					P.KEY_PRE_NET_OUTPUTS: ['bn' + str(l)],
 				}
 				
@@ -205,7 +205,7 @@ for ds in datasets:
 					PP.KEY_WTA_K: lrn_rule_k[lrn_rule],
 					P.KEY_DEEP_TEACHER_SIGNAL: lrn_rule_dts[lrn_rule],
 					P.KEY_PRE_NET_MODULES: ['models.hebb.model_' + str(num_layers[ds]) + 'l.Net'],
-					P.KEY_PRE_NET_MDL_PATHS: [P.PROJECT_ROOT + '/results/configs/vision/hebb/config_base_hebb[' + lrn_rule + '_' + ds + ('_da' if da else '') + ']/iter_' + P.STR_TOKEN + '/models/model0.pt'],
+					P.KEY_PRE_NET_MDL_PATHS: [P.PROJECT_ROOT + '/results/configs/vision/hebb/config_base_hebb[' + lrn_rule + '_' + ds + ('_da' if da else '') + ']/iter' + P.STR_TOKEN + '/models/model0.pt'],
 					P.KEY_PRE_NET_OUTPUTS: ['bn' + str(l)],
 				}
 				
@@ -229,7 +229,7 @@ for ds in datasets:
 					P.KEY_LOCAL_LRN_RULE: lrn_rule_keys[lrn_rule],
 					PP.KEY_WTA_K: lrn_rule_k[lrn_rule],
 					P.KEY_PRE_NET_MODULES: ['models.hebb.model_' + str(num_layers[ds]) + 'l.Net'],
-					P.KEY_PRE_NET_MDL_PATHS: [P.PROJECT_ROOT + '/results/configs/vision/hebb/config_base_hebb[' + lrn_rule + '_' + ds + ('_da' if da else '') + ']/iter_' + P.STR_TOKEN + '/models/model0.pt'],
+					P.KEY_PRE_NET_MDL_PATHS: [P.PROJECT_ROOT + '/results/configs/vision/hebb/config_base_hebb[' + lrn_rule + '_' + ds + ('_da' if da else '') + ']/iter' + P.STR_TOKEN + '/models/model0.pt'],
 					P.KEY_PRE_NET_OUTPUTS: ['bn' + str(l)],
 				}
 				
@@ -253,7 +253,7 @@ for ds in datasets:
 					P.KEY_LOCAL_LRN_RULE: lrn_rule_keys[lrn_rule],
 					PP.KEY_WTA_K: lrn_rule_k[lrn_rule],
 					P.KEY_PRE_NET_MODULES: ['models.hebb.model_' + str(num_layers[ds]) + 'l.Net'],
-					P.KEY_PRE_NET_MDL_PATHS: [P.PROJECT_ROOT + '/results/configs/vision/hebb/gdes_fc_on_hebb_layer_ft[' + str(l) + '_' + lrn_rule + '_' + ds + ('_da' if da else '') + ']/iter_' + P.STR_TOKEN + '/models/model0.pt'],
+					P.KEY_PRE_NET_MDL_PATHS: [P.PROJECT_ROOT + '/results/configs/vision/hebb/gdes_fc_on_hebb_layer_ft[' + str(l) + '_' + lrn_rule + '_' + ds + ('_da' if da else '') + ']/iter' + P.STR_TOKEN + '/models/model0.pt'],
 					P.KEY_PRE_NET_OUTPUTS: ['bn' + str(l)],
 				}
 				
@@ -278,7 +278,7 @@ for ds in datasets:
 					P.KEY_LOCAL_LRN_RULE: lrn_rule_keys[lrn_rule],
 					PP.KEY_WTA_K: lrn_rule_k[lrn_rule],
 					P.KEY_PRE_NET_MODULES: ['models.hebb.model_' + str(num_layers[ds]) + 'l.Net'],
-					P.KEY_PRE_NET_MDL_PATHS: [P.PROJECT_ROOT + '/results/configs/vision/hebb/config_base_hebb[' + lrn_rule + '_' + ds + ('_da' if da else '') + ']/iter_' + P.STR_TOKEN + '/models/model0.pt'],
+					P.KEY_PRE_NET_MDL_PATHS: [P.PROJECT_ROOT + '/results/configs/vision/hebb/config_base_hebb[' + lrn_rule + '_' + ds + ('_da' if da else '') + ']/iter' + P.STR_TOKEN + '/models/model0.pt'],
 					P.KEY_PRE_NET_OUTPUTS: ['bn' + str(l)],
 				}
 				
@@ -303,7 +303,7 @@ for ds in datasets:
 					P.KEY_LOCAL_LRN_RULE: lrn_rule_keys[lrn_rule],
 					PP.KEY_WTA_K: lrn_rule_k[lrn_rule],
 					P.KEY_PRE_NET_MODULES: ['models.hebb.model_' + str(num_layers[ds]) + 'l.Net'],
-					P.KEY_PRE_NET_MDL_PATHS: [P.PROJECT_ROOT + '/results/configs/vision/hebb/gdes_fc_on_hebb_layer_ft[' + str(l) + '_' + lrn_rule + '_' + ds + ('_da' if da else '') + ']/iter_' + P.STR_TOKEN + '/models/model0.pt'],
+					P.KEY_PRE_NET_MDL_PATHS: [P.PROJECT_ROOT + '/results/configs/vision/hebb/gdes_fc_on_hebb_layer_ft[' + str(l) + '_' + lrn_rule + '_' + ds + ('_da' if da else '') + ']/iter' + P.STR_TOKEN + '/models/model0.pt'],
 					P.KEY_PRE_NET_OUTPUTS: ['bn' + str(l)],
 				}
 				
@@ -327,7 +327,7 @@ for ds in datasets:
 					P.KEY_LOCAL_LRN_RULE: lrn_rule_keys[lrn_rule],
 					PP.KEY_WTA_K: lrn_rule_k[lrn_rule],
 					P.KEY_PRE_NET_MODULES: ['models.hebb.model_' + str(num_layers[ds]) + 'l.Net'],
-					P.KEY_PRE_NET_MDL_PATHS: [P.PROJECT_ROOT + '/results/configs/vision/hebb/config_base_hebb[' + lrn_rule + '_' + ds + ('_da' if da else '') + ']/iter_' + P.STR_TOKEN + '/models/model0.pt'],
+					P.KEY_PRE_NET_MDL_PATHS: [P.PROJECT_ROOT + '/results/configs/vision/hebb/config_base_hebb[' + lrn_rule + '_' + ds + ('_da' if da else '') + ']/iter' + P.STR_TOKEN + '/models/model0.pt'],
 					P.KEY_PRE_NET_OUTPUTS: ['bn' + str(l)],
 				}
 				
@@ -351,6 +351,6 @@ for ds in datasets:
 					P.KEY_LOCAL_LRN_RULE: lrn_rule_keys[lrn_rule],
 					PP.KEY_WTA_K: lrn_rule_k[lrn_rule],
 					P.KEY_PRE_NET_MODULES: ['models.hebb.model_' + str(num_layers[ds]) + 'l.Net'],
-					P.KEY_PRE_NET_MDL_PATHS: [P.PROJECT_ROOT + '/results/configs/vision/hebb/gdes_fc_on_hebb_layer_ft[' + str(l) + '_' + lrn_rule + '_' + ds + ('_da' if da else '') + ']/iter_' + P.STR_TOKEN + '/models/model0.pt'],
+					P.KEY_PRE_NET_MDL_PATHS: [P.PROJECT_ROOT + '/results/configs/vision/hebb/gdes_fc_on_hebb_layer_ft[' + str(l) + '_' + lrn_rule + '_' + ds + ('_da' if da else '') + ']/iter' + P.STR_TOKEN + '/models/model0.pt'],
 					P.KEY_PRE_NET_OUTPUTS: ['bn' + str(l)],
 				}

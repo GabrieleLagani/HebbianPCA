@@ -81,7 +81,7 @@ def run_experiment(config, mode, seeds, tokens, hpsearch, hpseeds, checkpoint, r
 			utils.update_csv(hpseeds[i], result, HPEXP_RESULT_CSV_PATH)
 		
 		# Copy best hyperparameter results to config result folder
-		HPEXP_BEST_RESULT_FOLDER = os.path.join(HPEXP_RESULT_BASE_FOLDER, 'hpseed_' + str(best_hpseed) + '_best')
+		HPEXP_BEST_RESULT_FOLDER = os.path.join(HPEXP_RESULT_BASE_FOLDER, 'hpseed' + str(best_hpseed) + '_best')
 		CONFIG_RESULT_FOLDER = os.path.join(P.RESULT_FOLDER, config.replace('.', os.sep))
 		logger.print_and_log("")
 		logger.print_and_log("Copying best hyperparameter result folder to configuration result folder...")
