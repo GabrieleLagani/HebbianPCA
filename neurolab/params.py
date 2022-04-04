@@ -153,4 +153,7 @@ KEY_SKCLF_NUM_SAMPLES = 'skclf_num_samples'
 KEY_SKCLF_NORM = 'skclf_norm'
 KEY_NYSTROEM_N_COMPONENTS = 'nystroem_n_components'
 KEY_KNN_N_NEIGHBORS = 'knn_n_neighbors'
+KEY_RETR_K = 'retr_k'
+KEY_RETR_NUM_REL = 'retr_num_rel'
+
 

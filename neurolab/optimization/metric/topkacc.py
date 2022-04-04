@@ -17,8 +17,8 @@ class TopKAccMetric:
 
 # Criterion manager for top-k accuracy.
 class TopKAccMetricManager(MetricManager):
-	# The default values to use for k. Use just k=1 by default. The user might require to evaluate differet top-
-	# k accuracies with different k. We use these static variables above to keep track of the k value to be used to
+	# The default values to use for k. Use just k=1 by default. The user might require to evaluate different top-
+	# k accuracies with different k. We use these static variables below to keep track of the k value to be used to
 	# instantiate the next TopKAccMetricManager.
 	k_list = [1]
 	k_list_index = 0
